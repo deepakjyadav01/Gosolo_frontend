@@ -20,7 +20,7 @@ export function Header() {
         initialState.isAuthenticated = !initialState.isAuthenticated
         dispatch({ type: 'LOGOUT' });
         logout(dispatch);
-        navigate("/home")
+        navigate("/")
         window.location.reload()
     }
     return (
