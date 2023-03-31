@@ -1,7 +1,10 @@
 import { React, useRef, useState, useEffect } from "react";
 import { initialState } from "../context/reducer";
+import { addQ, deleteQ } from "../services/profileAPI";
+import { useNavigate } from "react-router-dom";
 
 export function ProfileForm() {
+    const navigate = useNavigate();
     const [QArray, setQArray] = useState([])
     const [WArray, setWArray] = useState([])
     const [JArray, setJArray] = useState([])
@@ -20,25 +23,38 @@ export function ProfileForm() {
         duration: "",
         position: "",
     })
+    const [Profile, setProfile] = useState({
+        fullname: "",
+        phone: '',
+        gender: '',
+        DOB: '',
+        qualication: [],
+        work: [],
+        company: []
+    })
     // Qualifications
     const handleChange = (e) => {
         setQualifications({ ...Qualifications, [e.target.name]: e.target.value });
     };
     const pushQ = (e) => {
         e.preventDefault()
-        setQArray(prev => [...prev, Qualifications])
-        setQualifications({
-            type: "",
-            institute: "",
-            marks: "",
-            year: ""
-        })
-    }
+            setQArray(prev => [...prev, res])
+            setQualifications({
+                type: "",
+                institute: "",
+                marks: "",
+                year: ""
+            })
+            // setProfile((prev) => ({
+            //     ...prev,
+            //     qualication: [...prev.qualication,]
+            // }))
+}
     useEffect(() => {
     }, [QArray])
-    const remove = (e, index) => {
+    const remove =  (e, i) => {
         e.preventDefault()
-        const q = QArray.filter((p) => p.index !== index);
+        const q = QArray.filter((p) => p.i !== i);
         setQArray(q);
     }
     //job
@@ -68,7 +84,7 @@ export function ProfileForm() {
     const pushW = (e) => {
         e.preventDefault()
         setWArray(prev => [...prev, worksample])
-        setJob({
+        setworksample({
             name: "",
             link: ""
         })
@@ -81,13 +97,24 @@ export function ProfileForm() {
     useEffect(() => {
     }, [WArray])
 
+    //photo
     const [selectedPhoto, setSelectedPhoto] = useState(null);
-
     const handlePhotoChange = (event) => {
         const photo = event.target.files[0];
         setSelectedPhoto(photo);
     };
 
+    //profileData
+    const handleChangeP = (e) => {
+        setProfile({ ...Profile, [e.target.name]: e.target.value });
+    };
+    useEffect(() => {
+        console.log(Profile)
+    }, [Profile])
+
+    const todata =(e)=>{
+        navigate("/ViewProfile")
+    }
     return (
         <>
 
@@ -110,8 +137,8 @@ export function ProfileForm() {
                                 <div className="w-full sm:w-2/3 ">
                                     <label className="block text-gray-700 font-bold">Name</label>
                                     <input
-                                        type="text"
-                                        placeholder="Name"
+                                        type="text" name="fullname" value={Profile.fullname}
+                                        placeholder="Name" onChange={handleChangeP}
                                         className="shadow appearance-none  w-full h-10 mt-2 mb-6 px-2 py-1 border outline-none leading-tight rounded text-gray-700 focus:outline-none"
                                     />
                                 </div>
@@ -127,7 +154,7 @@ export function ProfileForm() {
                             <div className="w-full sm:w-2/3 my-2">
                                 <label className="block text-gray-700 font-bold">Phone Number</label>
                                 <input
-                                    type="text"
+                                    type="text" name="phone" value={Profile.phone} onChange={handleChangeP}
                                     placeholder="Phone Number"
                                     className="shadow appearance-none w-full h-10 mt-2 mb-6 px-2 py-1 border outline-none rounded leading-tight text-gray-700 focus:outline-none"
                                 />
@@ -139,7 +166,7 @@ export function ProfileForm() {
                                 <select
                                     className="shadow appearance-none border rounded w-full h-10 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     id="gender"
-                                    name="gender"
+                                    name="gender" value={Profile.gender} onChange={handleChangeP}
                                 >
                                     <option value="">Select a gender</option>
                                     <option value="male">Male</option>
@@ -154,7 +181,7 @@ export function ProfileForm() {
                                 <input
                                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                     id="dateOfBirth"
-                                    type="date"
+                                    type="date" name="DOB" value={Profile.DOB} onChange={handleChangeP}
                                     placeholder="Enter your date of birth"
 
                                 />
@@ -226,11 +253,11 @@ export function ProfileForm() {
                                         <div className="bg-white font-sans flex my-4 py-4 justify-around sm:justify-between leading-tight w-full md:mx-auto md:px-20 lg:m-0 border-2 shadow-2xl rounded-lg border-white">
                                             <div>
                                                 <ol className="text-lg font-normal my-2 "> <li>{i + 1}. {q.types}</li> </ol>
-                                                <ul className="font-light text-base capitalize"> <li>{q.institute} </li><li>{q.marks} CGPA / Percentage</li><li>Year of passing: {q.year}  </li>
+                                                <ul className="font-light text-base capitalize"> <li>{q.Institute} </li><li>{q.marks} CGPA / Percentage</li><li>Year of passing: {q.year}  </li>
                                                 </ul>
                                             </div>
-                                            <div className="mt-8 flex justify-center justify-self-center bg-primary w-16 h-10 hover:bg-tertiary rounded text-white p-2">
-                                                <button onClick={remove}
+                                            <div className="my-auto flex justify-center justify-self-center border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">
+                                                <button onClick={remove(i)}
                                                     className="">delete</button>
                                             </div>
                                         </div>
@@ -292,7 +319,7 @@ export function ProfileForm() {
                                                 <ul className="font-light text-base capitalize"> <li>Position: {q.position} </li><li>Duration: {q.duration} </li>
                                                 </ul>
                                             </div>
-                                            <div className="mt-6 flex justify-center justify-self-center bg-primary w-16 h-10 hover:bg-tertiary rounded text-white p-2">
+                                            <div className="my-auto flex justify-center justify-self-center border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">
                                                 <button onClick={removeJ}
                                                     className="">delete</button>
                                             </div>
@@ -344,7 +371,7 @@ export function ProfileForm() {
                                                 <ul className="font-light text-base capitalize"> <li>{q.link} </li>
                                                 </ul>
                                             </div>
-                                            <div className="mt-8 flex justify-center justify-self-center bg-primary w-16 h-10 hover:bg-tertiary rounded text-white p-2">
+                                            <div className="my-auto flex justify-center justify-self-center border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">
                                                 <button onClick={removeW}
                                                     className="">delete</button>
                                             </div>
@@ -354,7 +381,7 @@ export function ProfileForm() {
                             </div>
                         </div>
                         <div className="py-8 flex justify-end">
-                            <button
+                            <button onClick={todata}
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Save & Register
                             </button>
@@ -396,7 +423,7 @@ export function ProfileForm() {
                                     </label>
                                 </div>
                             </div>
-                        
+
                             <hr className=" text-white mt-24 mb-12" />
                             <div className="mt-12 font-bold mx-auto my-auto pt-8 pb-3 px-8 text-gray-100 text-2xl">
                                 Welcome EveryBody!!!
@@ -486,7 +513,7 @@ export function ProfileForm() {
                                 </div>
                             </div>
                             <hr className="mt-8" />
-                            <div className="mt-8 px-3">
+                            <div className="mt-8 px-3 md:px-8">
                                 <p className="text-white content-center">
                                     Lorem Ipsum is simply dummy text of the printing and
                                     typesetting industry. Lorem Ipsum has been the industry's

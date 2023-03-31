@@ -11,6 +11,7 @@ import { Profile } from "./Components/profile/Profile";
 import { Blogs } from "./Components/blogs/blogs";
 import { initialState } from "./Components/context/reducer";
 import { React, useEffect } from "react";
+import ProfileData from "./Components/profile/ProfileData";
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
             <Route path="/ViewPosts" element={<Viewposts />} />
             <Route path="/ViewPosts/:id" element={<Post />} />
             <Route path="/Profile" element={<Profile />} />
+            <Route path="/ViewProfile" element={<ProfileData />} />
             <Route path="/Blogs" element={<Blogs />} />
           </Routes>
         </div>

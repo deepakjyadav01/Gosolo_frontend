@@ -84,7 +84,7 @@ export function Login() {
 
                             {/* <button className="bg-[#BDBBC0] hover:bg-white rounded-xl text-black pt-1 pb-1">Login</button> */}
                             <button  disabled={loading}
-                                className="bg-secondary mt-4 hover:bg-tertiary rounded-xl text-white py-2">Login</button>
+                                className="bg-indigo-600 mt-4 hover:bg-tertiary rounded-xl text-white py-2">Login</button>
                         </form>
                         {/* <div className="mt-10 grid grid-cols-3 items-center text-gray-500">
                             <hr className="border-gray-500" />
