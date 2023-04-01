@@ -1,6 +1,6 @@
 import { React, useRef, useState, useEffect } from "react";
 import { initialState } from "../context/reducer";
-import { addQ, deleteQ } from "../services/profileAPI";
+import { addQ, addW, deleteQ } from "../services/profileAPI";
 import { useNavigate } from "react-router-dom";
 
 export function ProfileForm() {
@@ -30,7 +30,8 @@ export function ProfileForm() {
         DOB: '',
         qualication: [],
         work: [],
-        company: []
+        job: [],
+        pic: ''
     })
     // Qualifications
     const handleChange = (e) => {
@@ -38,21 +39,17 @@ export function ProfileForm() {
     };
     const pushQ = (e) => {
         e.preventDefault()
-            setQArray(prev => [...prev, res])
-            setQualifications({
-                type: "",
-                institute: "",
-                marks: "",
-                year: ""
-            })
-            // setProfile((prev) => ({
-            //     ...prev,
-            //     qualication: [...prev.qualication,]
-            // }))
-}
+        setQArray(prev => [...prev, Qualifications])
+        setQualifications({
+            type: "",
+            institute: "",
+            marks: "",
+            year: ""
+        })
+    }
     useEffect(() => {
     }, [QArray])
-    const remove =  (e, i) => {
+    const remove = (e, i) => {
         e.preventDefault()
         const q = QArray.filter((p) => p.i !== i);
         setQArray(q);
@@ -98,22 +95,43 @@ export function ProfileForm() {
     }, [WArray])
 
     //photo
-    const [selectedPhoto, setSelectedPhoto] = useState(null);
+    const [selectedPhoto, setSelectedPhoto] = useState();
     const handlePhotoChange = (event) => {
         const photo = event.target.files[0];
+        console.log(photo)
         setSelectedPhoto(photo);
     };
 
     //profileData
     const handleChangeP = (e) => {
         setProfile({ ...Profile, [e.target.name]: e.target.value });
+        
     };
-    useEffect(() => {
-        console.log(Profile)
-    }, [Profile])
 
-    const todata =(e)=>{
-        navigate("/ViewProfile")
+    const Createprofile =  (e) => {
+        e.preventDefault()
+        QArray.map(async (i)=>{
+            const data = await addQ(i)
+            setProfile((prev) => ({
+                ...prev,
+                qualication: [...prev.qualication, data._id]
+            }))
+        })
+        WArray.map(async (i)=>{
+            const data = await addW(i)
+            setProfile((prev) => ({
+                ...prev,
+                work: [...prev.work, data._id]
+            }))     
+        })
+        JArray.map(async (i)=>{
+            const data = await addW(i)
+            setProfile((prev) => ({
+                ...prev,
+                jo: [...prev.work, data._id]
+            }))
+        })
+        
     }
     return (
         <>
@@ -253,11 +271,11 @@ export function ProfileForm() {
                                         <div className="bg-white font-sans flex my-4 py-4 justify-around sm:justify-between leading-tight w-full md:mx-auto md:px-20 lg:m-0 border-2 shadow-2xl rounded-lg border-white">
                                             <div>
                                                 <ol className="text-lg font-normal my-2 "> <li>{i + 1}. {q.types}</li> </ol>
-                                                <ul className="font-light text-base capitalize"> <li>{q.Institute} </li><li>{q.marks} CGPA / Percentage</li><li>Year of passing: {q.year}  </li>
+                                                <ul className="font-normal text-base capitalize"> <li>{q.Institute} </li><li>{q.marks} CGPA / Percentage</li><li>Year of passing: {q.year}  </li>
                                                 </ul>
                                             </div>
                                             <div className="my-auto flex justify-center justify-self-center border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">
-                                                <button onClick={remove(i)}
+                                                <button onClick={remove}
                                                     className="">delete</button>
                                             </div>
                                         </div>
@@ -316,7 +334,7 @@ export function ProfileForm() {
                                         <div className="bg-white font-sans flex my-4 py-4 justify-around sm:justify-between leading-tight w-full md:mx-auto md:px-20 lg:m-0 border-2 shadow-2xl rounded-lg border-white">
                                             <div>
                                                 <ol className="text-lg font-normal my-2"> <li>{i + 1}. Company: {q.company}</li> </ol>
-                                                <ul className="font-light text-base capitalize"> <li>Position: {q.position} </li><li>Duration: {q.duration} </li>
+                                                <ul className="font-normal text-base capitalize"> <li>Position: {q.position} </li><li>Duration: {q.duration} </li>
                                                 </ul>
                                             </div>
                                             <div className="my-auto flex justify-center justify-self-center border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">
@@ -368,7 +386,7 @@ export function ProfileForm() {
                                         <div className="bg-white font-sans flex my-4 py-4 justify-around sm:justify-between leading-tight w-full md:mx-auto md:px-20 lg:m-0 border-2 shadow-2xl rounded-lg border-white">
                                             <div>
                                                 <ol className="text-lg font-normal my-2 "> <li>{i + 1}. {q.name}</li> </ol>
-                                                <ul className="font-light text-base capitalize"> <li>{q.link} </li>
+                                                <ul className="font-normal text-base capitalize"> <li>Link: {q.link} </li>
                                                 </ul>
                                             </div>
                                             <div className="my-auto flex justify-center justify-self-center border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">
@@ -381,7 +399,7 @@ export function ProfileForm() {
                             </div>
                         </div>
                         <div className="py-8 flex justify-end">
-                            <button onClick={todata}
+                            <button onClick={Createprofile}
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Save & Register
                             </button>
@@ -421,6 +439,16 @@ export function ProfileForm() {
                                             onChange={handlePhotoChange}
                                         />
                                     </label>
+                                    <div className="mt-16 ">
+                                        <div className="w-full ">
+                                            <label className="block text-white font-bold mb-2">About Me</label>
+                                            <textarea
+                                                type="type" name="Aboutme" value={Profile.Aboutme}
+                                                placeholder="Write about yourself" onChange={handleChangeP}
+                                                className="shadow appearance-none bg-transparent placeholder-white w-full h-max overflow-y-auto overflow-x-visible mt-2 mb-6 px-2 py-1 border-none outline-none leading-tight rounded text-white focus:outline-none"
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 

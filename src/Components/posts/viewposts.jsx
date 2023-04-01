@@ -29,7 +29,7 @@ export function Viewposts(props) {
 
           <div class="bg-white  text-black border-slate-300 rounded-md shadow-lg">
             <div class="h-42 overflow-hidden">
-              <img class=" rounded-lg rounded-r-xl" src="https://random.imagecdn.app/500/350" alt="" />
+              <img class=" rounded-lg rounded-r-xl" src="https://picsum.photos/500/350?random=5" alt="" />
             </div>
             <div className=" pt-4">
               <h3 class="px-4 text-lg font-bold">Machine Learning</h3>

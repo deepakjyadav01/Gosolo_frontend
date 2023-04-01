@@ -42,6 +42,7 @@ function App() {
             <Route path="/Profile" element={<Profile />} />
             <Route path="/ViewProfile" element={<ProfileData />} />
             <Route path="/Blogs" element={<Blogs />} />
+            <Route path="/CreatePost" element={<AddPost />} />
           </Routes>
         </div>
       </AuthProvider>
