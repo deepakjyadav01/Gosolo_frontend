@@ -1,16 +1,23 @@
 import { React, useRef, useState, useEffect } from "react";
 import { initialState } from "../context/reducer";
-import { addQ, addW, deleteQ } from "../services/profileAPI";
+import { Profiledata, addQ, addW,addJ ,addprofileID, profilepic } from "../services/profileAPI";
 import { useNavigate } from "react-router-dom";
 
 export function ProfileForm() {
+    useEffect(() => {
+        if(initialState.userDetails.profileID !== null){
+            navigate("/ViewProfile")
+        }
+    }, [])
+    
     const navigate = useNavigate();
     const [QArray, setQArray] = useState([])
     const [WArray, setWArray] = useState([])
     const [JArray, setJArray] = useState([])
+    const [bool, setbool] = useState(true)
     const [Qualifications, setQualifications] = useState({
         types: "",
-        institute: "",
+        Institute: "",
         marks: "",
         year: ""
     })
@@ -28,7 +35,7 @@ export function ProfileForm() {
         phone: '',
         gender: '',
         DOB: '',
-        qualication: [],
+        qualification: [],
         work: [],
         job: [],
         pic: ''
@@ -41,18 +48,18 @@ export function ProfileForm() {
         e.preventDefault()
         setQArray(prev => [...prev, Qualifications])
         setQualifications({
-            type: "",
-            institute: "",
+            types: "",
+            Institute: "",
             marks: "",
             year: ""
         })
     }
     useEffect(() => {
     }, [QArray])
-    const remove = (e, i) => {
-        e.preventDefault()
-        const q = QArray.filter((p) => p.i !== i);
-        setQArray(q);
+    const deleteQ = (value) => {
+        setQArray(oldValues => {
+            return oldValues.filter(p => p !== value)
+        })
     }
     //job
     const handleChangeJ = (e) => {
@@ -67,10 +74,10 @@ export function ProfileForm() {
             position: "",
         })
     }
-    const removeJ = (e, index) => {
-        e.preventDefault()
-        const q = JArray.filter((p) => p.index !== index);
-        setJArray(q);
+    const deleteJ = (value) => {
+        setJArray(oldValues => {
+            return oldValues.filter(p => p !== value)
+        })
     }
     useEffect(() => {
     }, [JArray])
@@ -86,10 +93,10 @@ export function ProfileForm() {
             link: ""
         })
     }
-    const removeW = (e, index) => {
-        e.preventDefault()
-        const q = WArray.filter((p) => p.index !== index);
-        setWArray(q);
+    const deleteW = (value) => {
+        setQArray(oldValues => {
+            return oldValues.filter(p => p !== value)
+        })
     }
     useEffect(() => {
     }, [WArray])
@@ -105,34 +112,66 @@ export function ProfileForm() {
     //profileData
     const handleChangeP = (e) => {
         setProfile({ ...Profile, [e.target.name]: e.target.value });
-        
-    };
 
-    const Createprofile =  (e) => {
-        e.preventDefault()
-        QArray.map(async (i)=>{
-            const data = await addQ(i)
+    };
+    const Createprofile = async (e) => {
+        if(QArray!== null){
+            QArray.map(async (i) => {
+                const data = await addQ(i)
+                setProfile((prev) => ({
+                    ...prev,
+                    qualification: [...prev.qualification, data._id]
+                }))
+            })
+        }
+        if(WArray !== null){[
+            WArray.map(async (i) => {
+                const data = await addW(i)
+                setProfile((prev) => ({
+                    ...prev,
+                    work: [...prev.work, data._id]
+                }))
+            })
+        ]}
+        if(JArray !== null){
+            JArray.map(async (i) => {
+                const data = await addJ(i)
+                setProfile((prev) => ({
+                    ...prev,
+                    job: [...prev.job, data._id]
+                }))
+            })
+        }
+        if(Profile.pic !== null){
+        const picture = await profilepic(selectedPhoto);
             setProfile((prev) => ({
                 ...prev,
-                qualication: [...prev.qualication, data._id]
+                pic: picture.image._id
             }))
-        })
-        WArray.map(async (i)=>{
-            const data = await addW(i)
-            setProfile((prev) => ({
-                ...prev,
-                work: [...prev.work, data._id]
-            }))     
-        })
-        JArray.map(async (i)=>{
-            const data = await addW(i)
-            setProfile((prev) => ({
-                ...prev,
-                jo: [...prev.work, data._id]
-            }))
-        })
-        
+        }
+        alert("Saved succesfully")
+        setbool(false)
     }
+    const Submit = async (e) =>{
+        try {
+            const data = await Profiledata(Profile)
+            const set = await addprofileID(data._id)
+            initialState.userDetails.profileID = set.profileID;
+            setProfile({})
+            localStorage.setItem('currentUser', JSON.stringify(initialState.userDetails));
+            navigate("/ViewProfile")
+        } catch (error) {
+            console.log(error)
+        }
+      
+    }
+    useEffect(() => {
+    }, [bool])
+    useEffect(() => {
+    }, [Profile])
+    useEffect(() => {
+    }, [initialState])
+
     return (
         <>
 
@@ -224,19 +263,19 @@ export function ProfileForm() {
                                     </label>
                                     <select
                                         className="shadow appearance-none border rounded w-full h-10 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                        id="type"
+                                        id="types"
                                         name="types" value={Qualifications.types} onChange={handleChange}
                                     >
                                         <option value="">Select Type</option>
-                                        <option value="10">10</option>
-                                        <option value="12">12</option>
+                                        <option value="10th">10</option>
+                                        <option value="12th">12</option>
                                         <option value="Graduation">Graduation</option>
                                     </select>
                                 </div>
                                 <div className="w-full px-1 my-2">
                                     <label className="block text-gray-700 font-bold ">Institute</label>
                                     <input
-                                        type="text" name="institute" value={Qualifications.institute} onChange={handleChange}
+                                        type="text" name="Institute" value={Qualifications.Institute} onChange={handleChange}
                                         placeholder="Institute"
                                         className="shadow appearance-none w-full h-10 mt-2 mb-6 px-2 py-1 border outline-none leading-tight rounded text-gray-700 focus:outline-none"
                                     />
@@ -267,16 +306,16 @@ export function ProfileForm() {
                             </div>
                             <div className=" mt-6" >
                                 {QArray.map((q, i) => (
-                                    <div key={i} className="my-4">
-                                        <div className="bg-white font-sans flex my-4 py-4 justify-around sm:justify-between leading-tight w-full md:mx-auto md:px-20 lg:m-0 border-2 shadow-2xl rounded-lg border-white">
-                                            <div>
+                                    <div key={i} className="my-4  ">
+                                        <div className="bg-white border-2 p-2 sm:flex sm:justify-between shadow-2xl rounded-lg border-white">
+                                            <div className=" mx-8 my-4">
                                                 <ol className="text-lg font-normal my-2 "> <li>{i + 1}. {q.types}</li> </ol>
-                                                <ul className="font-normal text-base capitalize"> <li>{q.Institute} </li><li>{q.marks} CGPA / Percentage</li><li>Year of passing: {q.year}  </li>
+                                                <ul className="font-normal text-base capitalize"> <li>Institute: {q.Institute} </li><li>{q.marks} CGPA / Percentage</li><li>Year of passing: {q.year}  </li>
                                                 </ul>
                                             </div>
-                                            <div className="my-auto flex justify-center justify-self-center border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">
-                                                <button onClick={remove}
-                                                    className="">delete</button>
+                                            <div className="mx-8 my-4 sm:my-auto flex justify-center ">
+                                                <button onClick={() => deleteQ(q)}
+                                                    className="border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">delete</button>
                                             </div>
                                         </div>
                                     </div>
@@ -331,15 +370,15 @@ export function ProfileForm() {
                             <div className=" mt-6" >
                                 {JArray.map((q, i) => (
                                     <div key={i} className="my-4">
-                                        <div className="bg-white font-sans flex my-4 py-4 justify-around sm:justify-between leading-tight w-full md:mx-auto md:px-20 lg:m-0 border-2 shadow-2xl rounded-lg border-white">
-                                            <div>
-                                                <ol className="text-lg font-normal my-2"> <li>{i + 1}. Company: {q.company}</li> </ol>
-                                                <ul className="font-normal text-base capitalize"> <li>Position: {q.position} </li><li>Duration: {q.duration} </li>
+                                        <div className="bg-white border-2 p-2 sm:flex sm:justify-between shadow-2xl rounded-lg border-white">
+                                            <div className=" mx-8 my-4">
+                                                <ol className="text-lg font-normal my-2 "> <li>{i + 1}: {q.company}</li> </ol>
+                                                <ul className="font-normal text-base capitalize"> <li>Duration: {q.duration} </li><li>Position: {q.position}  </li>
                                                 </ul>
                                             </div>
-                                            <div className="my-auto flex justify-center justify-self-center border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">
-                                                <button onClick={removeJ}
-                                                    className="">delete</button>
+                                            <div className="mx-8 my-4 sm:my-auto flex justify-center ">
+                                                <button onClick={() => deleteJ(q)}
+                                                    className="border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">delete</button>
                                             </div>
                                         </div>
                                     </div>
@@ -383,27 +422,35 @@ export function ProfileForm() {
                             <div className=" mt-6" >
                                 {WArray.map((q, i) => (
                                     <div key={i} className="my-4">
-                                        <div className="bg-white font-sans flex my-4 py-4 justify-around sm:justify-between leading-tight w-full md:mx-auto md:px-20 lg:m-0 border-2 shadow-2xl rounded-lg border-white">
-                                            <div>
-                                                <ol className="text-lg font-normal my-2 "> <li>{i + 1}. {q.name}</li> </ol>
-                                                <ul className="font-normal text-base capitalize"> <li>Link: {q.link} </li>
+                                        <div className="bg-white border-2 p-2 sm:flex sm:justify-between shadow-2xl rounded-lg border-white">
+                                            <div className=" mx-8 my-4">
+                                                <ol className="text-lg font-normal my-2 "> <li>{i + 1}: {q.name}</li> </ol>
+                                                <ul className="font-normal text-base capitalize"> <li>link: {q.link} </li>
                                                 </ul>
                                             </div>
-                                            <div className="my-auto flex justify-center justify-self-center border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">
-                                                <button onClick={removeW}
-                                                    className="">delete</button>
+                                            <div className="mx-8 my-4 sm:my-auto flex justify-center ">
+                                                <button onClick={() => deleteW(q)}
+                                                    className="border-2 border-primary w-20 h-10 hover:bg-secondary hover:text-white rounded-md text-black p-2">delete</button>
                                             </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
                         </div>
+                        {bool ? 
                         <div className="py-8 flex justify-end">
                             <button onClick={Createprofile}
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Save & Register
+                                Save
                             </button>
-                        </div>
+                        </div> :
+                            <div className="py-8 flex justify-end">
+                                <button onClick={Submit}
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    Submit
+                                </button>
+                            </div>
+                        }
                     </div>
                     <div className="lg:w-1/3 py-8 lg:m-0 m-8 flex sm:w-2/3 md:w-3/4 lg:rounded-r-3xl shadow-2xl sm:mx-auto bg-blue-500">
                         <div className="px-auto flex-col ">
@@ -439,16 +486,16 @@ export function ProfileForm() {
                                             onChange={handlePhotoChange}
                                         />
                                     </label>
-                                    <div className="mt-16 ">
-                                        <div className="w-full ">
-                                            <label className="block text-white font-bold mb-2">About Me</label>
-                                            <textarea
-                                                type="type" name="Aboutme" value={Profile.Aboutme}
-                                                placeholder="Write about yourself" onChange={handleChangeP}
-                                                className="shadow appearance-none bg-transparent placeholder-white w-full h-max overflow-y-auto overflow-x-visible mt-2 mb-6 px-2 py-1 border-none outline-none leading-tight rounded text-white focus:outline-none"
-                                            />
-                                        </div>
-                                    </div>
+                                </div>
+                            </div>
+                            <div className="mt-16 mx-5">
+                                <div className="w-full p-4">
+                                    <label className="block text-white font-bold mb-2">About Me</label>
+                                    <textarea
+                                        type="type" name="Aboutme" value={Profile.Aboutme}
+                                        placeholder="Write about yourself" onChange={handleChangeP}
+                                        className="shadow appearance-none bg-transparent placeholder-white w-full h-max overflow-y-auto overflow-x-visible mt-2 mb-6 px-2 py-1 border-none outline-none leading-tight rounded text-white focus:outline-none"
+                                    />
                                 </div>
                             </div>
 

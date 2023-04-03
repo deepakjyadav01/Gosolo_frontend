@@ -47,12 +47,11 @@ export function Register() {
 			});
 			let response = await RegisterUser(Data)
 			if (response) {
-				console.log(Data)
+				console.log(response)
 				alert("congrats");
 				navigate("/login")
 			}
 		} catch (error) {
-			console.log(error)
 		}
 
 	};

@@ -1,8 +1,11 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import { initialState } from "../context/reducer";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Fragment } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { getProfile, getImage } from "../services/profileAPI";
+import { baseURL } from "../services/api";
 
 const navigation = [
    { name: "Dashboard", href: "#", current: true },
@@ -14,99 +17,69 @@ const navigation = [
 function classNames(...classes) {
    return classes.filter(Boolean).join(" ");
 }
-
-
 export function ProfileData() {
+   const [bool, setbool] = useState(true)
+   const navigate = useNavigate()
+
+   async function fetchdata() {
+      const id = initialState.userDetails.profileID
+      const res = await getProfile(id)
+      setphoto(res.image._id)
+      console.log(res)
+      const img = await getImage(res.image._id)
+      console.log(img)
+      setData(res)
+   }
+   const [Data, setData] = useState({})
+   const [photo, setphoto] = useState()
+   const location = useLocation();
+
+   useEffect(() => {
+      const profileID = initialState.userDetails.profileID
+      if (profileID === null) {
+         navigate("/Profile")
+      }
+      if (bool) {
+         fetchdata()
+         setbool(false)
+      }
+   }, [])
+   useEffect(() => {
+   }, [photo])
+   useEffect(() => {
+   }, [Data])
+
+
    return (
       <div class="h-screen bg-inherit font-serif">
-         <div class="container mx-auto my-5 p-5">
-            <div class="md:flex no-wrap md:-mx-2 ">
+         <div class="container mx-auto my-10 p-5">
+            <div class="md:flex no-wrap md:mx-2 ">
                {/* <!-- Left Side --> */}
-               <div class="w-full md:w-3/12 md:mx-2">
+               <div class="w-full md:w-5/12 lg:w-3/12 md:mx-6">
                   {/* <!-- Profile Card --> */}
-                  <div class="bg-white p-3 border-t-4 border-green-400">
-                     <div class="image overflow-hidden">
+                  <div class="bg-white  mx-auto px-4 border-t-8 border-b-8 border-green-400">
+                     <div class="image overflow-hidden mt-8">
                         <img
-                           class="h-auto w-full mx-auto"
-                           src="https://lavinephotography.com.au/wp-content/uploads/2017/01/PROFILE-Photography-112.jpg"
-                           alt=""
+                           class="xs:h-32 xs:w-32 sm:h-48 sm:w-48 mx-auto rounded-full" //src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+                           src={`http://localhost:3200/api/auth/image/${photo}`}
+                           alt="https://i.pravatar.cc/150?u=a042581f4e29026704d"
                         ></img>
                      </div>
-                     <h1 class="text-gray-900 font-bold text-xl leading-8 my-1">
-                        Jane Doe
+                     <h1 class="text-gray-900 font-semibold text-3xl text-center lg:my-8 leading-8 mt-8">
+                        {Data.fullname}
                      </h1>
-                     <h3 class="text-gray-600 font-lg text-semibold leading-6">
-                        Owner at Her Company Inc.
+                     <h3 class="text-gray-600 font-normal text-base leading-7 capitalize mx-4 my-8">
+                     {Data.Aboutme}
                      </h3>
-                     <p class="text-sm text-gray-500 hover:text-gray-600 leading-6">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Reprehenderit, eligendi dolorum sequi illum qui unde aspernatur non
-                        deserunt
-                     </p>
-                     <ul class="bg-gray-100 text-gray-600 hover:text-gray-700 hover:shadow py-2 px-3 mt-3 divide-y rounded shadow-sm">
-                        <li class="flex items-center py-3">
-                           <span>Status</span>
-                           <span class="ml-auto">
-                              <span class="bg-green-500 py-1 px-2 rounded text-white text-sm">
-                                 Active
-                              </span>
-                           </span>
-                        </li>
-                        <li class="flex items-center py-3">
-                           <span>Member since</span>
-                           <span class="ml-auto">Nov 07, 2016</span>
-                        </li>
-                     </ul>
+                     
                   </div>
                   {/* <!-- End of profile card --> */}
                   <div class="my-4"></div>
-                  {/* <!-- Friends card --> */}
-                  {/* <div class="bg-white p-3 hover:shadow">
-                     <div class="flex items-center space-x-3 font-semibold text-gray-900 text-xl leading-8">
-                         <span class="text-green-500">
-                             <svg class="h-5 fill-current" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
-                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                             </svg>
-                         </span>
-                         <span>Similar Profiles</span>
-                     </div>
-                     <div class="grid grid-cols-3">
-                         <div class="text-center my-2">
-                             <img class="h-16 w-16 rounded-full mx-auto"
-                                 src="https://cdn.australianageingagenda.com.au/wp-content/uploads/2015/06/28085920/Phil-Beckett-2-e1435107243361.jpg"
-                                 alt="">
-                             </img>
-                             <a href="#" class="text-main-color">Kojstantin</a>
-                         </div>
-                         <div class="text-center my-2">
-                             <img class="h-16 w-16 rounded-full mx-auto"
-                                 src="https://avatars2.githubusercontent.com/u/24622175?s=60&amp;v=4"
-                                 alt="">
-                             </img>
-                             <a href="#" class="text-main-color">James</a>
-                         </div>
-                         <div class="text-center my-2">
-                             <img class="h-16 w-16 rounded-full mx-auto"
-                                 src="https://lavinephotography.com.au/wp-content/uploads/2017/01/PROFILE-Photography-112.jpg"
-                                 alt="">
-                             </img>
-                             <a href="#" class="text-main-color">Natie</a>
-                         </div>
-                         <div class="text-center my-2">
-                             <img class="h-16 w-16 rounded-full mx-auto"
-                                 src="https://bucketeer-e05bbc84-baa3-437e-9518-adb32be77984.s3.amazonaws.com/public/images/f04b52da-12f2-449f-b90c-5e4d5e2b1469_361x361.png"
-                                 alt="">
-                             </img>
-                             <a href="#" class="text-main-color">Casey</a>
-                         </div>
-                     </div>
-                 </div> */}
+
                   {/* <!-- End of friends card --> */}
                </div>
                {/* <!-- Right Side --> */}
-               <div class="w-full md:w-9/12 mx-2 h-64">
+               <div class="w-full md:w-7/12 lg:w-9/12 mx-2 h-64">
                   {/* <!-- Profile tab --> */}
                   {/* <!-- About Section --> */}
                   <div class="bg-white p-3 shadow-sm rounded-sm">
@@ -130,7 +103,7 @@ export function ProfileData() {
                         <span class="tracking-wide">About</span>
                      </div>
                      <div class="text-gray-700">
-                        <div class="grid md:grid-cols-2 text-sm">
+                        <div class="grid lg:grid-cols-2 text-sm">
                            <div class="grid grid-cols-2">
                               <div class="px-4 py-2 font-semibold">First Name</div>
                               <div class="px-4 py-2">Jane</div>
@@ -262,7 +235,7 @@ export function ProfileData() {
                </div>
             </div>
          </div>
-      </div>
+      </div >
    );
 }
 // NAVBAR ENDS

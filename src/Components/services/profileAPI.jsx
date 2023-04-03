@@ -5,7 +5,7 @@ import { initialState } from "../context/reducer";
 export async function addQ(data) {
     let res = {
         types: data.types,
-        Institute: data.institute,
+        Institute: data.Institute,
         marks: data.marks,
         year: data.year
     }
@@ -13,14 +13,62 @@ export async function addQ(data) {
     return response.data
 }
 export async function addJ(data) {
-    const response = await axios.post(`${baseURL}/addjob`, data, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+    let res = {
+        company: data.company,
+        duration: data.duration,
+        position: data.position
+    }
+    const response = await axios.post(`${baseURL}/addjob`, res, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
     return response.data
 }
 export async function addW(data) {
-    const response = await axios.post(`${baseURL}/addworksample`, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+    let res = {
+        name: data.name,
+        link: data.link,
+    }
+    const response = await axios.post(`${baseURL}/addworksample`,res, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
     return response.data
 }
-export async function profilepic(data) {
-    const response = await axios.post(`${baseURL}/upload`, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+export async function profilepic(pic) {
+    let res = {
+        file: pic
+    }
+    const response = await axios.post(`${baseURL}/upload`, res ,{ headers: { "Content-Type": "multipart/form-data", 'x-access-token': `${initialState.token}` } })
     return response.data
+}
+export async function Profiledata(data) {
+    let res ={
+        fullname: data.fullname,
+        gender: data.gender,
+        DOB: data.DOB ,
+        phone : data.phone,
+        qualification : data.qualification,
+        worksample: data.work,
+        job: data.job,
+        Aboutme: data.Aboutme,
+        image: data.pic
+    }
+    console.log(res)
+    const response = await axios.post(`${baseURL}/addprofile`,res, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+    return response.data
+}
+export async function addprofileID(id) {
+    let res = {
+        profileID: id
+    }
+    const response = await axios.patch(`${baseURL}/addprofileID`, res ,{ headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+    return response.data
+}
+export async function getProfile(id) {
+    const response = await axios.get(`${api.baseURL}/getprofile/${id}` ,{ headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+    return response.data
+}
+
+export async function getImage(id) {
+    try{
+        const response = await axios.get(`${api.baseURL}/getImage/${id}`,{ headers: {'x-access-token': `${initialState.token}` }})
+        return response
+    }catch(error){
+        console.log(error)
+    }
 }

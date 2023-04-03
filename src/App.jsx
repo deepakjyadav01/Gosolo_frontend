@@ -10,6 +10,7 @@ import { AuthProvider } from "./Components/context";
 import { Profile } from "./Components/profile/Profile";
 import { Blogs } from "./Components/blogs/blogs";
 import { initialState } from "./Components/context/reducer";
+import { Addposts} from "./Components/posts/Addposts"
 import { React, useEffect } from "react";
 import ProfileData from "./Components/profile/ProfileData";
 
@@ -42,7 +43,7 @@ function App() {
             <Route path="/Profile" element={<Profile />} />
             <Route path="/ViewProfile" element={<ProfileData />} />
             <Route path="/Blogs" element={<Blogs />} />
-            <Route path="/CreatePost" element={<AddPost />} />
+            <Route path="/CreatePost" element={<Addposts />} />
           </Routes>
         </div>
       </AuthProvider>

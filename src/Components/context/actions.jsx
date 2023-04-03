@@ -22,7 +22,11 @@ export async function RegisterUser(Reg) {
         let result = await reguser(data)
         return result;
     } catch (error) {
-       console.log(error.message)
+        if(error.response.data.message){
+            alert(`${error.response.data.message}`)
+        }else {
+            alert(`${error.response.data}. User do not exist`)
+        }
     }
 }
 export async function loginUser(dispatch, loginPayload) {
@@ -40,7 +44,13 @@ export async function loginUser(dispatch, loginPayload) {
         dispatch({ type: 'LOGIN_ERROR', error: res.data.errors[0] });
         return;
     } catch (error) {
-        dispatch({ type: 'LOGIN_ERROR', error: error });
+        
+        if(error.response.data.message){
+            alert(`${error.response.data.message}`)
+        }else {
+            alert(`${error.response.data}`)
+        }
+        
     }
 }
 
