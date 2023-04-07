@@ -1,15 +1,15 @@
 import { React, useRef, useState, useEffect } from "react";
 import { initialState } from "../context/reducer";
-import { Profiledata, addQ, addW,addJ ,addprofileID, profilepic } from "../services/profileAPI";
+import { Profiledata, addQ, addW, addJ, addprofileID, profilepic } from "../services/profileAPI";
 import { useNavigate } from "react-router-dom";
 
 export function ProfileForm() {
     useEffect(() => {
-        if(initialState.userDetails.profileID !== null){
+        if (initialState.userDetails.profileID !== null) {
             navigate("/ViewProfile")
         }
     }, [])
-    
+
     const navigate = useNavigate();
     const [QArray, setQArray] = useState([])
     const [WArray, setWArray] = useState([])
@@ -38,7 +38,7 @@ export function ProfileForm() {
         qualification: [],
         work: [],
         job: [],
-        pic: ''
+        pic: ""
     })
     // Qualifications
     const handleChange = (e) => {
@@ -105,7 +105,6 @@ export function ProfileForm() {
     const [selectedPhoto, setSelectedPhoto] = useState();
     const handlePhotoChange = (event) => {
         const photo = event.target.files[0];
-        console.log(photo)
         setSelectedPhoto(photo);
     };
 
@@ -115,7 +114,7 @@ export function ProfileForm() {
 
     };
     const Createprofile = async (e) => {
-        if(QArray!== null){
+        if (QArray !== null) {
             QArray.map(async (i) => {
                 const data = await addQ(i)
                 setProfile((prev) => ({
@@ -124,16 +123,18 @@ export function ProfileForm() {
                 }))
             })
         }
-        if(WArray !== null){[
-            WArray.map(async (i) => {
-                const data = await addW(i)
-                setProfile((prev) => ({
-                    ...prev,
-                    work: [...prev.work, data._id]
-                }))
-            })
-        ]}
-        if(JArray !== null){
+        if (WArray !== null) {
+            [
+                WArray.map(async (i) => {
+                    const data = await addW(i)
+                    setProfile((prev) => ({
+                        ...prev,
+                        work: [...prev.work, data._id]
+                    }))
+                })
+            ]
+        }
+        if (JArray !== null) {
             JArray.map(async (i) => {
                 const data = await addJ(i)
                 setProfile((prev) => ({
@@ -142,20 +143,21 @@ export function ProfileForm() {
                 }))
             })
         }
-        if(Profile.pic !== null){
         const picture = await profilepic(selectedPhoto);
-            setProfile((prev) => ({
-                ...prev,
-                pic: picture.image._id
-            }))
-        }
+        console.log(picture)
+        setProfile((prev) => ({
+            ...prev,
+            pic: picture.files.filename
+        }))
         alert("Saved succesfully")
         setbool(false)
     }
-    const Submit = async (e) =>{
+    const Submit = async (e) => {
         try {
             const data = await Profiledata(Profile)
-            const set = await addprofileID(data._id)
+            const id = data._id;
+            const fullname = data.fullname
+            const set = await addprofileID(id, fullname)
             initialState.userDetails.profileID = set.profileID;
             setProfile({})
             localStorage.setItem('currentUser', JSON.stringify(initialState.userDetails));
@@ -163,7 +165,7 @@ export function ProfileForm() {
         } catch (error) {
             console.log(error)
         }
-      
+
     }
     useEffect(() => {
     }, [bool])
@@ -437,13 +439,13 @@ export function ProfileForm() {
                                 ))}
                             </div>
                         </div>
-                        {bool ? 
-                        <div className="py-8 flex justify-end">
-                            <button onClick={Createprofile}
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Save
-                            </button>
-                        </div> :
+                        {bool ?
+                            <div className="py-8 flex justify-end">
+                                <button onClick={Createprofile}
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    Save
+                                </button>
+                            </div> :
                             <div className="py-8 flex justify-end">
                                 <button onClick={Submit}
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">

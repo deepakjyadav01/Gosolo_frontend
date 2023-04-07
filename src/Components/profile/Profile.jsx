@@ -11,7 +11,7 @@ export function Profile() {
    const onLoadEffect = () => {
       setTimeout(() => {
          setloading(false);
-      }, 3000);
+      }, 2000);
 
    }; useEffect(onLoadEffect, []);
    if (loading) {

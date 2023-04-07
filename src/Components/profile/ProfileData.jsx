@@ -6,6 +6,7 @@ import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { getProfile, getImage } from "../services/profileAPI";
 import { baseURL } from "../services/api";
+import moment from "moment";
 
 const navigation = [
    { name: "Dashboard", href: "#", current: true },
@@ -18,185 +19,208 @@ function classNames(...classes) {
    return classes.filter(Boolean).join(" ");
 }
 export function ProfileData() {
+   const [DOB, setDOB] = useState()
    const [bool, setbool] = useState(true)
+   const [freelancer, setfreelancer] = useState(false)
+   const [provider, setprovider] = useState(false)
+   const [userpost, setuserpost] = useState([])
+   const [ImageSrc, setImageSrc] = useState(null);
    const navigate = useNavigate()
 
    async function fetchdata() {
+      console.log("hii")
       const id = initialState.userDetails.profileID
       const res = await getProfile(id)
-      setphoto(res.image._id)
-      console.log(res)
-      const img = await getImage(res.image._id)
-      console.log(img)
-      setData(res)
+      localStorage.setItem('UserProfile', JSON.stringify(res));
+      // console.log(res)
+      getImage(res.image)
+         .then(response => {
+            setImageSrc(response.request.responseURL);
+         })
+         .catch(error => {
+            console.log(error);
+         })
+      //setphoto(img)
+      if (res) {
+         setDOB(moment(res.DOB).utc().format('YYYY-MM-DD'))
+      } setData(res)
    }
    const [Data, setData] = useState({})
-   const [photo, setphoto] = useState()
+   const [photo, setphoto] = useState([])
    const location = useLocation();
+
+   const viewposts = () => {
+      navigate("/ViewPosts")
+   }
+   const createpost = () => {
+      navigate("/CreatePost")
+   }
 
    useEffect(() => {
       const profileID = initialState.userDetails.profileID
       if (profileID === null) {
          navigate("/Profile")
       }
-      if (bool) {
+      let UserProfile = localStorage.getItem("UserProfile")
+         ? JSON.parse(localStorage.getItem("UserProfile"))
+         : "";
+      if (initialState.userDetails.role[0] === 'FREELANCER') {
+         setfreelancer(true)
+      } else {
+         setprovider(true)
+      }
+      if (UserProfile) {
+        // console.log(UserProfile)
+         setData(UserProfile)
+         setDOB(moment(UserProfile.DOB).utc().format('YYYY-MM-DD'))
+         getImage(UserProfile.image)
+            .then(response => {
+               setImageSrc(response.request.responseURL);
+            })
+            .catch(error => {
+               console.log(error);
+            })
+      } else {
          fetchdata()
          setbool(false)
       }
+
+
    }, [])
    useEffect(() => {
-   }, [photo])
+   }, [ImageSrc])
    useEffect(() => {
    }, [Data])
 
 
    return (
-      <div class="h-screen bg-inherit font-serif">
-         <div class="container mx-auto my-10 p-5">
-            <div class="md:flex no-wrap md:mx-2 ">
+      <div className=" bg-inherit font-sans">
+         <div className=" w-full h-auto mx-auto my-10 p-5">
+            <div className="md:flex   md:mx-4 ">
                {/* <!-- Left Side --> */}
-               <div class="w-full md:w-5/12 lg:w-3/12 md:mx-6">
+               <div className="w-full md:w-5/12 lg:w-3/12 md:mx-6 ">
                   {/* <!-- Profile Card --> */}
-                  <div class="bg-white  mx-auto px-4 border-t-8 border-b-8 border-green-400">
-                     <div class="image overflow-hidden mt-8">
-                        <img
-                           class="xs:h-32 xs:w-32 sm:h-48 sm:w-48 mx-auto rounded-full" //src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                           src={`http://localhost:3200/api/auth/image/${photo}`}
-                           alt="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                        ></img>
+                  <div className="bg-white shadow-2xl my-4 py-8 mx-auto px-4 border-t-8 rounded-2xl border-b-8 border-green-400">
+                     <div className="image h-56 w-56 rounded-full mx-auto  overflow-hidden mt-8">
+                        {ImageSrc ? (
+                           <img src={ImageSrc} alt="My Image" />
+                        ) : (
+                           <p>Loading image...</p>
+                        )}
                      </div>
-                     <h1 class="text-gray-900 font-semibold text-3xl text-center lg:my-8 leading-8 mt-8">
+                     <h1 className="text-gray-900 font-semibold text-3xl text-center lg:my-8 leading-8 mt-8">
                         {Data.fullname}
                      </h1>
-                     <h3 class="text-gray-600 font-normal text-base leading-7 capitalize mx-4 my-8">
-                     {Data.Aboutme}
+                     <hr className=" bg-slate-600" />
+                     <hr className=" bg-slate-600" />
+                     <h3 className="text-gray-600 font-normal text-base sm:text-lg leading-7 capitalize mx-4 my-8">
+                        {Data.Aboutme}
                      </h3>
-                     
+
                   </div>
                   {/* <!-- End of profile card --> */}
-                  <div class="my-4"></div>
+                  <div className="my-4"></div>
 
                   {/* <!-- End of friends card --> */}
                </div>
                {/* <!-- Right Side --> */}
-               <div class="w-full md:w-7/12 lg:w-9/12 mx-2 h-64">
+               <div className="w-full md:w-7/12 lg:w-9/12 h-auto">
                   {/* <!-- Profile tab --> */}
                   {/* <!-- About Section --> */}
-                  <div class="bg-white p-3 shadow-sm rounded-sm">
-                     <div class="flex items-center space-x-2 font-semibold text-gray-900 leading-8">
+                  <div className="bg-white p-3  my-4 py-8 rounded-xl shadow-2xl border-t-8  border-b-8 border-green-400">
+                     <div className="flex items-center mx-6 space-x-2 text-base font-semibold text-gray-900 leading-8">
                         <span clas="text-green-500">
                            <svg
-                              class="h-5"
+                              className="h-5"
                               xmlns="http://www.w3.org/2000/svg"
                               fill="none"
                               viewBox="0 0 24 24"
                               stroke="currentColor"
                            >
                               <path
-                                 stroke-linecap="round"
-                                 stroke-linejoin="round"
-                                 stroke-width="2"
+                                 strokeLinecap="round"
+                                 strokeLinejoin="round"
+                                 strokeWidth="2"
                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                               />
                            </svg>
                         </span>
-                        <span class="tracking-wide">About</span>
+                        <span className="tracking-wide text-lg">About</span>
                      </div>
-                     <div class="text-gray-700">
-                        <div class="grid lg:grid-cols-2 text-sm">
-                           <div class="grid grid-cols-2">
-                              <div class="px-4 py-2 font-semibold">First Name</div>
-                              <div class="px-4 py-2">Jane</div>
+                     <div className="text-gray-700 my-4 ">
+                        <div className="grid lg:grid-cols-2 py-4 text-lg">
+                           <div className="grid grid-cols-2">
+                              <div className="px-4 py-2 font-semibold">Name</div>
+                              <div className="px-4 py-2">{Data.fullname}</div>
                            </div>
-                           <div class="grid grid-cols-2">
-                              <div class="px-4 py-2 font-semibold">Last Name</div>
-                              <div class="px-4 py-2">Doe</div>
+                           <div className="grid grid-cols-2">
+                              <div className="px-4 py-2 font-semibold">Gender</div>
+                              <div className="px-4 py-2">{Data.gender}</div>
                            </div>
-                           <div class="grid grid-cols-2">
-                              <div class="px-4 py-2 font-semibold">Gender</div>
-                              <div class="px-4 py-2">Female</div>
+                           <div className="grid grid-cols-2">
+                              <div className="px-4 py-2 font-semibold">Contact No.</div>
+                              <div className="px-4 py-2">+91 {Data.phone}</div>
                            </div>
-                           <div class="grid grid-cols-2">
-                              <div class="px-4 py-2 font-semibold">Contact No.</div>
-                              <div class="px-4 py-2">+11 998001001</div>
+                           <div className="grid grid-cols-2">
+                              <div className="px-4 py-2 font-semibold">Birthday</div>
+                              <div className="px-4 py-2">{DOB}</div>
                            </div>
-                           <div class="grid grid-cols-2">
-                              <div class="px-4 py-2 font-semibold">Current Address</div>
-                              <div class="px-4 py-2">Beech Creek, PA, Pennsylvania</div>
-                           </div>
-                           <div class="grid grid-cols-2">
-                              <div class="px-4 py-2 font-semibold">Permanant Address</div>
-                              <div class="px-4 py-2">Arlington Heights, IL, Illinois</div>
-                           </div>
-                           <div class="grid grid-cols-2">
-                              <div class="px-4 py-2 font-semibold">Email.</div>
-                              <div class="px-4 py-2">
-                                 <a class="text-blue-800" href="mailto:jane@example.com">
-                                    jane@example.com
+
+                           <div className="grid grid-cols-2">
+                              <div className="px-4 py-2 font-semibold">Email.</div>
+                              <div className="px-4 py-2">
+                                 <a className="text-blue-800 flex-wrap" href="mailto:jane@example.com">
+                                    {initialState.userDetails.email}
                                  </a>
                               </div>
                            </div>
-                           <div class="grid grid-cols-2">
-                              <div class="px-4 py-2 font-semibold">Birthday</div>
-                              <div class="px-4 py-2">Feb 06, 1998</div>
-                           </div>
                         </div>
                      </div>
-                     <button class="block w-full text-blue-800 text-sm font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4">
-                        Show Full Information
-                     </button>
+
                   </div>
                   {/* <!-- End of about section --> */}
 
-                  <div class="my-4"></div>
+                  <div className="my-8"></div>
 
                   {/* <!-- Experience and education --> */}
-                  <div class="bg-white p-3 shadow-sm rounded-sm">
-                     <div class="grid grid-cols-2">
-                        <div>
-                           <div class="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mb-3">
+                  <div className="bg-white p-3 h-max my-4 py-8 rounded-xl shadow-2xl border-t-8  border-b-8 border-green-400">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mx-auto">
+                        <div className=" mx-auto">
+                           <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mx-2 mb-3">
                               <span clas="text-green-500">
                                  <svg
-                                    class="h-5"
+                                    className="h-5"
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
                                  >
                                     <path
-                                       stroke-linecap="round"
-                                       stroke-linejoin="round"
-                                       stroke-width="2"
+                                       strokeLinecap="round"
+                                       strokeLinejoin="round"
+                                       strokeWidth="2"
                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                                     />
                                  </svg>
                               </span>
-                              <span class="tracking-wide">Experience</span>
+                              <span className="tracking-wide">Education</span>
                            </div>
-                           <ul class="list-inside space-y-2">
-                              <li>
-                                 <div class="text-teal-600">Owner at Her Company Inc.</div>
-                                 <div class="text-gray-500 text-xs">March 2020 - Now</div>
-                              </li>
-                              <li>
-                                 <div class="text-teal-600">Owner at Her Company Inc.</div>
-                                 <div class="text-gray-500 text-xs">March 2020 - Now</div>
-                              </li>
-                              <li>
-                                 <div class="text-teal-600">Owner at Her Company Inc.</div>
-                                 <div class="text-gray-500 text-xs">March 2020 - Now</div>
-                              </li>
-                              <li>
-                                 <div class="text-teal-600">Owner at Her Company Inc.</div>
-                                 <div class="text-gray-500 text-xs">March 2020 - Now</div>
-                              </li>
-                           </ul>
+                           {Data.qualification?.map((q, i) => (
+                              <ul className="list-inside space-y-2 my-4 mx-4">
+                                 <li key={i}>
+                                    <div className="text-teal-600 font-semibold text-lg">{q.types}</div>
+                                    <div className="text-gray-500 text-base"> Institute: {q.Institute} </div>
+                                    <div className="text-gray-500 text-base"> {q.marks} CGPA/Percentage </div>
+                                    <div className="text-gray-500 text-base"> year of passing :{q.year} </div>
+                                 </li>
+                              </ul>
+                           ))}
                         </div>
-                        <div>
-                           <div class="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mb-3">
+                        <div className=" mx-8">
+                           <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mb-3">
                               <span clas="text-green-500">
                                  <svg
-                                    class="h-5"
+                                    className="h-5"
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
@@ -208,25 +232,59 @@ export function ProfileData() {
                                        d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
                                     />
                                     <path
-                                       stroke-linecap="round"
-                                       stroke-linejoin="round"
-                                       stroke-width="2"
+                                       strokeLinecap="round"
+                                       strokeLinejoin="round"
+                                       strokeWidth="2"
                                        d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
                                     />
                                  </svg>
                               </span>
-                              <span class="tracking-wide">Education</span>
+                              <span className="tracking-wide">Job Experience</span>
                            </div>
-                           <ul class="list-inside space-y-2">
-                              <li>
-                                 <div class="text-teal-600">Masters Degree in Oxford</div>
-                                 <div class="text-gray-500 text-xs">March 2020 - Now</div>
-                              </li>
-                              <li>
-                                 <div class="text-teal-600">Bachelors Degreen in LPU</div>
-                                 <div class="text-gray-500 text-xs">March 2020 - Now</div>
-                              </li>
-                           </ul>
+                           {Data.job?.map((q, i) => (
+                              <ul className="list-inside space-y-2 my-4 mx-4">
+                                 <li key={i}>
+                                    <div className="text-teal-600 font-semibold text-lg"> {q.company}</div>
+                                    <div className="text-gray-500 text-base"> Position: {q.position} </div>
+                                    <div className="text-gray-500 text-base"> Duration: {q.duration}  </div>
+                                 </li>
+                              </ul>
+                           ))}
+                        </div>
+                        <div className=" mx-8">
+                           <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mb-3">
+                              <span clas="text-green-500">
+                                 <svg
+                                    className="h-5"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                 >
+                                    <path fill="#fff" d="M12 14l9-5-9-5-9 5 9 5z" />
+                                    <path
+                                       fill="#fff"
+                                       d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+                                    />
+                                    <path
+                                       strokeLinecap="round"
+                                       strokeLinejoin="round"
+                                       strokeWidth="2"
+                                       d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
+                                    />
+                                 </svg>
+                              </span>
+                              <span className="tracking-wide">Work Sample</span>
+                           </div>
+                           {Data.worksample?.map((q, i) => (
+                              <ul className="list-inside space-y-2 my-4 mx-4">
+                                 <li key={i}>
+                                    <div className="text-teal-600 font-semibold text-lg">{q.name}</div>
+                                    <div className="text-gray-500 text-base"> Link: {q.link} </div>
+
+                                 </li>
+                              </ul>
+                           ))}
                         </div>
                      </div>
                      {/* <!-- End of Experience and education grid --> */}
@@ -234,11 +292,141 @@ export function ProfileData() {
                   {/* <!-- End of profile tab --> */}
                </div>
             </div>
+
+            <div className="md:flex my-8 mt-24 font-sans md:mx-4 ">
+               <div className="w-full mx-auto my-8 md:w-1/2  p-8 md:m-4 shadow-2xl bg-white border border-gray-200 rounded-lg  dark:bg-gray-800 dark:border-gray-700">
+                  {freelancer && userpost.length > 0 && (
+                     <>
+                        <div>
+                           <h1 className="flex justify-center mt-4 mb-4 text-4xl leading-8 text-gray-700 py-6">
+                              Your Posts
+                           </h1>
+                           <hr className=" bg-slate-600" />
+                           <hr className=" bg-slate-600" />
+                        </div>
+                        
+                        <div className="w-auto p-4 mt-8 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                           <div className="flow-root">
+                              <ul
+                                 role="list"
+                                 className="divide-y divide-gray-200 dark:divide-gray-700"
+                              >
+                                 <li className="py-3 sm:py-4">
+                                    <div className="flex items-center space-x-4">
+                                       <div className="flex-1 min-w-0">
+                                          <p className="text-lg font-medium text-gray-900 truncate dark:text-white">
+                                             Title
+                                          </p>
+                                          <p className="text-base text-blue-800 hover:underline ">
+                                             category
+                                          </p>
+                                       </div>
+                                       <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                          <button className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                             View
+                                          </button>
+
+                                       </div>
+                                    </div>
+
+                                 </li>
+                                 <hr className=" bg-slate-600" />
+                                 <hr className=" bg-slate-600" />
+                              </ul>
+                           </div>
+                        </div>
+                     </>
+                  )}
+                  {freelancer && userpost.length === 0 && (
+                     <div>
+                        <div>
+                           <h1 className="flex justify-center mt-4 mb-4 text-4xl leading-8 text-gray-700 py-6">
+                              Your Posts
+                           </h1>
+                           <hr className=" bg-slate-600" />
+                           <hr className=" bg-slate-600" />
+                        </div>
+                        
+                        <div className="flex justify-center  text-2xl my-8 leading-6 text-gray-700">
+                           No posts Available!!! Look for them.
+                        </div>
+                        <div className="flex justify-center my-8 text-base font-semibold text-gray-900 p-2 dark:text-white">
+                           <button onClick={viewposts}
+                              className="mr-2 my-1 uppercase tracking-wider p-4 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-base font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                              Search
+                           </button>
+
+                        </div>
+                     </div>
+                  )}
+                  {provider && (
+                     <div>
+                        <div>
+                           <h1 className="flex justify-center mt-4 mb-4 text-4xl leading-8 text-gray-700 py-6">
+                              Your Posts
+                           </h1>
+                           <hr className=" bg-slate-600" />
+                           <hr className=" bg-slate-600" />
+                        </div>
+                        
+                        <div className="flex justify-center text-2xl my-4 leading-6 text-gray-700">
+                           Inorder to create and view your posts, click on Post
+                        </div>
+                        <div className="flex justify-center my-8 text-base font-semibold text-gray-900 p-2 dark:text-white">
+                           <button onClick={createpost}
+                              className="mr-2 my-1 uppercase tracking-wider p-4 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-base font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                              Post
+                           </button>
+                        </div>
+                     </div>
+                  )}
+               </div>
+               {/* RIGHT COMPONENT   */}
+               <div className="w-full mx-auto my-8 md:w-1/2 shadow-2xl md:m-4 bg-white border border-gray-200 rounded-lg  p-8 dark:bg-gray-800 dark:border-gray-700">
+                  <div>
+                     <h1 className="flex justify-center mt-4 mb-4 text-4xl leading-8 text-gray-700 py-6">
+                        Your Blogs
+                     </h1>
+                  </div>
+                  <div className="w-auto p-4  bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                     <div className="flow-root">
+                        <ul
+                           role="list"
+                           className="divide-y divide-gray-200 dark:divide-gray-700"
+                        >
+                           <li className="py-3 sm:py-4">
+                              <div className="flex items-center space-x-4">
+                                 <div className="flex-1 min-w-0">
+                                    <p className="text-lg font-medium text-gray-900 truncate dark:text-white">
+                                       Title
+                                    </p>
+                                    <p className="text-base text-blue-800 hover:underline ">
+                                       category
+                                    </p>
+                                 </div>
+                                 <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                    <button className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                       View
+                                    </button>
+
+                                 </div>
+                              </div>
+
+                           </li>
+                           <hr className=" bg-slate-600" />
+                           <hr className=" bg-slate-600" />
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+            </div>
          </div>
       </div >
    );
+
 }
 // NAVBAR ENDS
+
 
 // USER PROFILE GRID
 

@@ -48,13 +48,14 @@ export async function Profiledata(data) {
         Aboutme: data.Aboutme,
         image: data.pic
     }
-    console.log(res)
+
     const response = await axios.post(`${baseURL}/addprofile`,res, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
     return response.data
 }
-export async function addprofileID(id) {
+export async function addprofileID(id,fullname) {
     let res = {
-        profileID: id
+        profileID: id,
+        fullname: fullname
     }
     const response = await axios.patch(`${baseURL}/addprofileID`, res ,{ headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
     return response.data
@@ -64,9 +65,9 @@ export async function getProfile(id) {
     return response.data
 }
 
-export async function getImage(id) {
+export async function getImage(name) {
     try{
-        const response = await axios.get(`${api.baseURL}/getImage/${id}`,{ headers: {'x-access-token': `${initialState.token}` }})
+        const response = await axios.get(`${api.baseURL}/getImage/${name}`,{ headers: {'x-access-token': `${initialState.token }`,responseType: 'arraybuffer' }})
         return response
     }catch(error){
         console.log(error)
