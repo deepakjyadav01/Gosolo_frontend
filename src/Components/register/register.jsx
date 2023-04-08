@@ -45,12 +45,20 @@ export function Register() {
 				errorMessage: null,
 				loading: true
 			});
-			let response = await RegisterUser(Data)
+			try {
+				let response = await RegisterUser(Data)
 			if (response) {
-				console.log(response)
 				alert("congrats");
 				navigate("/login")
 			}
+			} catch (error) {
+				if(error.response.data.message){
+					alert(`${error.response.data.message}`)
+				}else {
+					alert(`${error.response.data}. User do not exist`)
+				}
+			}
+			
 		} catch (error) {
 		}
 

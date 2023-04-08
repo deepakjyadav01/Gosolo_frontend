@@ -76,6 +76,7 @@ import MEDitor from '@uiw/react-md-editor';
 
     const toPost = (id) => {
         // navigate(`/ViewPosts/:${id}`);
+        console.log(id)
         setID(id)
         setviewpost(true)
     }
