@@ -1,45 +1,156 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getpostbyID } from "../services/postAPI";
+import { getpostbyID, selectbidder, reviewwork, resubmit } from "../services/postAPI";
 import MDEditor, { selectWord } from "@uiw/react-md-editor";
 import { initialState } from "../context/reducer";
+import { getImage } from "../services/profileAPI";
+import Madal from "../home/modal";
+import Loader from "../home/loader";
+
 
 export function Provider(props) {
+    const [showmodal, setshowmodal] = useState(false);
+    const [message, setmessage] = useState();
     const [post, setpost] = useState({})
     const [body, setbody] = useState()
+    const [bidders, setbidders] = useState([])
+    const [selected, setselected] = useState()
+    const [Suser, setSuser] = useState(false)
+    const [work, setwork] = useState(false)
+    const [WS, setWS] = useState({})
+    const [confirm, setconfirm] = useState(false)
+    const [file, setfile] = useState()
+    const [selectedImg, setselectedImg] = useState()
+    const [ImageSrc, setImageSrc] = useState([]);
+    const [loading, setloading] = useState(false);
+    const [success, setsuccess] = useState(false);
+    const navigate = useNavigate()
     async function fetchpostdata(id) {
         const res = await getpostbyID(id)
         if (res) {
-            console.log(res)
             setpost(res)
             setbody(res.body)
+            if (res.Selected !== null) {
+                setselected(res.Selected)
+                const img = res.Selected.image
+                const r = await getImage(img)
+                setselectedImg(r.request.responseURL)
+                setSuser(true)
+            }
+            else {
+                setbidders(res.bidders)
+                res.bidders?.map(async (q) => {
+                    const img = await getImage(q.image)
+                    setImageSrc(prev => [...prev, img.request.responseURL])
+                })
+            }
+            if (res.confirm === "no") {
+                setwork(false)
+            }
         }
     }
+    async function fetchwork(file) {
+        // let workfile = localStorage.getItem("workfile")
+        //     ? JSON.parse(localStorage.getItem("workfile"))
+        //     : "";
+        // if (workfile) {
+        //     setfile(workfile)
+        // } else {
+        if (file !== undefined && null) {
+            const res = await getImage(file)
+            if (res) {
+                setwork(true)
+
+                setfile(res.request.responseURL)
+                localStorage.setItem('workfile', JSON.stringify(res.request.responseURL));
+            }
+        }
+    }
+    async function fetchWS() {
+        setwork(true)
+        setWS(post.worksample)
+    }
+    const toProfile = (id) => {
+        navigate('/Freelancer', { state: { ID: id } })
+    }
+    const verifywork = async (ans) => {
+        const res = await reviewwork(post._id, ans)
+        if (res.data) {
+            setshowmodal(true)
+            setmessage("response noted succesfully")
+            if (res.data.confirm === "no") {
+                const r = await resubmit(post._id)
+                setwork(false)
+            } else {
+                setsuccess(true)
+                setpost()
+            }
+        }
+    }
+    const select = async (id) => {
+        const postID = post._id
+        const res = await selectbidder(postID, id)
+        if (res) {
+            setmessage("User selected succesfully")
+            setshowmodal(true)
+            setSuser(true)
+            setselected(res.data.Selected)
+            const img = res.data.Selected.image
+            const r = await getImage(img)
+            setselectedImg(r.request.responseURL)
+        }
+    }
+    const tochat = async (sID) => {
+        const iID = initialState.userDetails.id;
+        var a = [];
+        a.push(sID, iID);
+        navigate('/Chat', { state: { ids: a,me:iID, other: sID } })
+    }
+
     useEffect(() => {
         fetchpostdata(props.id)
     }, [])
     useEffect(() => {
         console.log(post)
+        if (post.file && post.file !== null) {
+            console.log("hii")
+            fetchwork(post.file)
+        } else if (post.worksample && Object.keys(post.worksample).length > 0) {
+            fetchWS()
+            console.log("hii")
+        }
+        if (post.confirm === "yes") {
+            setsuccess(true)
+        }
     }, [post])
     useEffect(() => {
-
-    }, [body])
+        console.log(selected)
+    }, [selected])
+    useEffect(() => {
+    }, [ImageSrc])
+    useEffect(() => {
+    }, [bidders])
+    useEffect(() => {
+        console.log(WS)
+    }, [WS])
 
     return (
         <>
+            <div className="hidden">
+                <Madal show={showmodal} message={message} close={() => setshowmodal(false)} />
+            </div>
             <div class="flex h-max bg-transparent font-roboto">
                 {/* <!-- left --> */}
-
                 {/* <!-- main --> */}
                 <div class="flex-1 flex flex-col overflow-hidden">
                     <main class="flex-1 overflow-x-hidden overflow-y-auto ">
-                        <div class="w-2/3 mx-auto my-10 mb-20 px-20 pb-12 bg-white shadow-xl rounded-2xl">
+                        <div class="mx-4 w-auto sm:w-2/3 sm:mx-auto my-10 mb-20 px-4 md:px-20 pb-12 bg-white shadow-xl rounded-2xl">
                             {/* <!-- search --> */}
 
                             {/* <!-- title --> */}
-                            <div class=" flex flex-col justify-center items-center">
+                            <div class=" flex justify-center items-center">
                                 <div>
-                                    <h1 className="flex justify-center mt-8 mb-4 text-4xl leading-8 text-gray-700 py-6">
+                                    <h1 className="flex justify-center font-bold mt-12 mb-4 text-4xl leading-8 text-gray-700 py-6">
                                         {post.title}
                                     </h1>
 
@@ -47,7 +158,7 @@ export function Provider(props) {
                             </div>
                             <hr class="border-gray-500 mt-8 mb-4" />
                             <div className="text-lg bg-inherit">
-                            <MDEditor.Markdown source={body}  />
+                                <MDEditor.Markdown source={body} />
                             </div>
                             <div class="flex flex-col items-center mt-8">
                                 <div class="space-y-4 ">
@@ -65,7 +176,7 @@ export function Provider(props) {
                                     </ul>
                                     <ul class="list-disc ml-4 font-bold space-y-2 py-4">
                                         <span class="font-semibold text-lg text-gray-800 -ml-4">
-                                             Details
+                                            Details
                                         </span>
                                         <li class="text-gray-600 text-base">
                                             {post.price} {post.currency}
@@ -88,36 +199,203 @@ export function Provider(props) {
                                             quam!
                                         </p>
                                     </div>
-                                   
+
                                 </div>
                                 <div class="mt-8">
-                                    { initialState.userDetails.role[0] === 'FREELANCER' && (
+                                    {initialState.userDetails.role[0] === 'FREELANCER' && (
                                         <div class="flex items-center justify-between space-x-2">
-                                        <button
-                                            type="button"
-                                            class="px-10 py-2 rounded-2xl bg-indigo-500 text-xs text-white font-semibold focus:outline-none focus:border-red-800"
-                                        >
-                                            Apply Now
-                                        </button>
-                                        <button
-                                            type="button"
-                                            class="px-4 py-2 rounded-2xl bg-indigo-500 text-white font-semibold"
-                                        >
-                                            <svg
-                                                class="w-5 h-5 text-white"
-                                                viewBox="0 0 512 512.0002"
-                                                xmlns="http://www.w3.org/2000/svg"
+                                            <button
+                                                type="button"
+                                                class="px-10 py-2 rounded-2xl bg-indigo-500 text-xs text-white font-semibold focus:outline-none focus:border-red-800"
                                             >
-                                                <path
-                                                    fill="white"
-                                                    d="m256 0c-141.484375 0-256 114.496094-256 256 0 44.902344 11.710938 88.757812 33.949219 127.4375l-32.984375 102.429688c-2.300782 7.140624-.410156 14.96875 4.894531 20.273437 5.253906 5.253906 13.0625 7.214844 20.273437 4.894531l102.429688-32.984375c38.679688 22.238281 82.535156 33.949219 127.4375 33.949219 141.484375 0 256-114.496094 256-256 0-141.484375-114.496094-256-256-256zm0 472c-40.558594 0-80.09375-11.316406-114.332031-32.726562-4.925781-3.078126-11.042969-3.910157-16.734375-2.078126l-73.941406 23.8125 23.8125-73.941406c1.804687-5.609375 1.042968-11.734375-2.082032-16.734375-21.40625-34.238281-32.722656-73.773437-32.722656-114.332031 0-119.101562 96.898438-216 216-216s216 96.898438 216 216-96.898438 216-216 216zm25-216c0 13.804688-11.191406 25-25 25s-25-11.195312-25-25c0-13.808594 11.191406-25 25-25s25 11.191406 25 25zm100 0c0 13.804688-11.191406 25-25 25s-25-11.195312-25-25c0-13.808594 11.191406-25 25-25s25 11.191406 25 25zm-200 0c0 13.804688-11.191406 25-25 25-13.804688 0-25-11.195312-25-25 0-13.808594 11.195312-25 25-25 13.808594 0 25 11.191406 25 25zm0 0"
-                                                />
-                                            </svg>
-                                        </button>
-                                    </div>
+                                                Apply Now
+                                            </button>
+                                            <button
+                                                type="button"
+                                                class="px-4 py-2 rounded-2xl bg-indigo-500 text-white font-semibold"
+                                            >
+                                                <svg
+                                                    class="w-5 h-5 text-white"
+                                                    viewBox="0 0 512 512.0002"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    <path
+                                                        fill="white"
+                                                        d="m256 0c-141.484375 0-256 114.496094-256 256 0 44.902344 11.710938 88.757812 33.949219 127.4375l-32.984375 102.429688c-2.300782 7.140624-.410156 14.96875 4.894531 20.273437 5.253906 5.253906 13.0625 7.214844 20.273437 4.894531l102.429688-32.984375c38.679688 22.238281 82.535156 33.949219 127.4375 33.949219 141.484375 0 256-114.496094 256-256 0-141.484375-114.496094-256-256-256zm0 472c-40.558594 0-80.09375-11.316406-114.332031-32.726562-4.925781-3.078126-11.042969-3.910157-16.734375-2.078126l-73.941406 23.8125 23.8125-73.941406c1.804687-5.609375 1.042968-11.734375-2.082032-16.734375-21.40625-34.238281-32.722656-73.773437-32.722656-114.332031 0-119.101562 96.898438-216 216-216s216 96.898438 216 216-96.898438 216-216 216zm25-216c0 13.804688-11.191406 25-25 25s-25-11.195312-25-25c0-13.808594 11.191406-25 25-25s25 11.191406 25 25zm100 0c0 13.804688-11.191406 25-25 25s-25-11.195312-25-25c0-13.808594 11.191406-25 25-25s25 11.191406 25 25zm-200 0c0 13.804688-11.191406 25-25 25-13.804688 0-25-11.195312-25-25 0-13.808594 11.195312-25 25-25 13.808594 0 25 11.191406 25 25zm0 0"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
+                            {bidders && !Suser && (
+                                <div className="w-full p-4 my-12 h-auto bg-white border border-gray-200 rounded-2xl shadow-2xl sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h5 className="text-2xl font-bold leading-9 text-gray-900 dark:text-white ">
+                                            Latest Applied Users
+                                        </h5>
+                                    </div>
+                                    {bidders.length === 0 && (
+                                        <div className="flex  text-xl my-8 leading-6 text-gray-700">
+                                            No one has applied!!! Wait until users apply.
+                                        </div>
+                                    )}
+                                    {bidders.length > 0 && (
+                                        <div className="flow-root ">
+                                            <ul
+                                                role="list"
+                                                className="divide-y my-8 divide-gray-200 dark:divide-gray-700"
+                                            > {bidders.map((q, i) => (
+                                                <li className="py-3 sm:py-4">
+                                                    <div className="flex items-center space-x-4">
+                                                        <div className="flex-shrink-0">
+                                                            <img
+                                                                className="w-12 h-12 rounded-full"
+                                                                src={ImageSrc[i]}
+                                                                alt="Neil image"
+                                                            />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-xl font-medium text-gray-900 truncate dark:text-white">
+                                                                {q.fullname}
+                                                            </p>
+
+                                                        </div>
+                                                        <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                                            <button onClick={() => { toProfile(q.profileID) }}
+                                                                className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                                                View Profile
+                                                            </button>
+                                                            <button onClick={() => { select(q._id) }}
+                                                                className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                                                Accept
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            ))}
+
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            {selected && Suser && selectedImg && (
+                                <div className="w-full p-4 my-12 h-auto bg-white border border-gray-200 rounded-2xl shadow-2xl sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                                    <div className="flex items-center ml-4 mt-4 justify-between mb-4">
+                                        <h5 className="text-2xl  font-bold leading-9 text-gray-900 dark:text-white ">
+                                            Your Selected Freelancer
+                                        </h5>
+                                    </div>
+                                    <div className="flow-root ">
+                                        <ul
+                                            role="list"
+                                            className="divide-y my-4 divide-gray-200 dark:divide-gray-700"
+                                        >
+                                            <li className="py-3 sm:py-4">
+                                                <div className="flex items-center md:ml-4 space-x-4">
+                                                    <div className="flex-shrink-0">
+                                                        <img
+                                                            className="w-12 h-12 rounded-full"
+                                                            src={selectedImg}
+                                                            alt="Neil image"
+                                                        />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-xl font-medium md:ml-4 text-gray-900 truncate dark:text-white">
+                                                            {selected.fullname}
+                                                        </p>
+                                                    </div>
+                                                    <div className="inline-flex items-center text-xs md:text-base font-semibold text-gray-900 dark:text-white">
+
+                                                        <button
+                                                            onClick={() => { tochat(selected._id) }}
+                                                            className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                                            Chat
+                                                        </button>
+
+
+                                                    </div>
+
+                                                </div>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                    {!work && (
+                                        <div className="flex mx-6 font-semibold text-xl my-4 leading-6 text-gray-700">
+                                            User has not submitted any work yet.
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                            {work && (
+                                <div className="w-full p-4 my-12 h-auto bg-white border border-gray-200 rounded-2xl shadow-2xl sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                                    <div className="flex items-center ml-4 mt-4 justify-between mb-2">
+                                        {!success && (
+                                            <h5 className="text-2xl  font-bold leading-9 text-gray-900 dark:text-white ">
+                                                Review Work
+                                            </h5>
+                                        )}
+                                        {success && (
+                                            <h5 className="text-2xl  font-bold leading-9 text-gray-900 dark:text-white ">
+                                                Final Work
+                                            </h5>
+                                        )}
+                                    </div>
+                                    <div className="mx-8 my-8">
+                                        {!file && !WS && !loading && (
+                                            <Loader />
+                                        )}
+                                        {file && (
+                                            <iframe
+                                                title="PDF viewer"
+                                                src={file}
+                                                className="w-full h-96 border-none shadow-md"
+                                            />
+                                        )}
+                                        {WS && !file && (
+                                            <div>
+                                                <div className="text-teal-600 font-semibold text-xl">{WS.name}</div>
+                                                <a href={WS.link} target="_blank" className="text-gray-500 text-base "> Link: {WS.link} </a>
+                                            </div>
+                                        )}
+                                        {!success && (
+                                            <div className="my-6">
+                                                <h5 className="text-xl  font-semibold leading-9 text-gray-900 dark:text-white ">
+                                                    Verify and Final work submission.
+                                                </h5>
+                                                <div className=" ">
+                                                    <button onClick={() => { verifywork("yes") }}
+                                                        className="mr-2 my-1 uppercase tracking-wider px-4 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                                        Yes
+                                                    </button>
+                                                    <button onClick={() => { verifywork("no") }}
+                                                        className="mr-2 my-1 uppercase tracking-wider px-4 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                                        No
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {success && (
+                                            <div className="my-6">
+                                                <h5 className="text-xl  font-semibold leading-9 text-gray-900 dark:text-white ">
+                                                    Proceed to payment
+                                                </h5>
+                                                <div className=" ">
+                                                    <button onClick={() => { payment() }}
+                                                        className="mr-2 my-1 uppercase tracking-wider px-4 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                                        payment
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                    </div>
+
+                                </div>
+                            )}
 
                         </div>
                     </main>

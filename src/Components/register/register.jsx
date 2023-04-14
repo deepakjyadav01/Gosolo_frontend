@@ -4,19 +4,22 @@ import PlaceholderImg from '../assets/Lsignup.jpg'
 import { Link, useNavigate } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { RegisterUser } from '../context/actions';
+import Madal from '../home/modal';
 // import { useAuthDispatch } from '../context/context';
 export function Register() {
 	const navigate = useNavigate();
-// const dispatch = useAuthDispatch();
+	// const dispatch = useAuthDispatch();
 	const RegUser = {
 		isSubmitting: false,
 		email: "",
 		password: "",
 		cnfpass: "",
-		role:"",
+		role: "",
 		loading: false,
 		errorMessage: null
 	};
+	const [message, setmessage] = useState();
+	const [showmodal, setshowmodal] = useState(false);
 	const [Data, setData] = useState(RegUser);
 	const handleInputChange = async (e) => {
 		setData({
@@ -25,17 +28,17 @@ export function Register() {
 		});
 	};
 	const [showin, setshowin] = useState(false)
-    const [pass, setpass] = useState("password")
-    const handleview = async (e) => {
-        e.preventDefault()
-        setshowin(!showin);
-        if(showin){
-            setpass("password")
-        }else{
-            setpass("text")
-        }
-    }
-	
+	const [pass, setpass] = useState("password")
+	const handleview = async (e) => {
+		e.preventDefault()
+		setshowin(!showin);
+		if (showin) {
+			setpass("password")
+		} else {
+			setpass("text")
+		}
+	}
+
 	const handleFormSubmit = async (e) => {
 		e.preventDefault();
 		try {
@@ -45,26 +48,22 @@ export function Register() {
 				errorMessage: null,
 				loading: true
 			});
-			try {
-				let response = await RegisterUser(Data)
+			let response = await RegisterUser(Data)
 			if (response) {
+				console.log(response)
 				alert("congrats");
 				navigate("/login")
 			}
-			} catch (error) {
-				if(error.response.data.message){
-					alert(`${error.response.data.message}`)
-				}else {
-					alert(`${error.response.data}. User do not exist`)
-				}
-			}
-			
+
 		} catch (error) {
 		}
 
 	};
 	return (
 		<>
+			<div className="hidden">
+				<Madal show={showmodal} message={message} close={() => setshowmodal(false)} />
+			</div>
 			<div className='pb-20 pt-20'>
 				<section className="bg-inherit min-h-screen flex items-center justify-center">
 					{/* reg */}
@@ -122,13 +121,13 @@ export function Register() {
 								</div>
 								<div className="mb-3 text-inherit ">
 									<select disabled={Data.loading} id="countries" name="role" value={Data.role} onChange={handleInputChange}
-									className="bg-inherit font-serif border border-gray-300 text-gray-600 text-base font-medium rounded-lg outline-none block w-full p-2.5">
+										className="bg-inherit font-serif border border-gray-300 text-gray-600 text-base font-medium rounded-lg outline-none block w-full p-2.5">
 										<option defaultValue >Choose a Role</option>
 										<option value="freelancer">Freelancer</option>
 										<option value="provider">Provider</option>
 									</select>
 								</div>
-								<button type="submit" disabled={Data.loading} 
+								<button type="submit" disabled={Data.loading}
 									className="bg-secondary rounded-xl text-white pt-2 pb-2 hover:bg-tertiary">
 									Register
 								</button>

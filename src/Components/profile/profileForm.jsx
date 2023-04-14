@@ -144,7 +144,6 @@ export function ProfileForm() {
             })
         }
         const picture = await profilepic(selectedPhoto);
-        console.log(picture)
         setProfile((prev) => ({
             ...prev,
             pic: picture.files.filename
@@ -156,8 +155,9 @@ export function ProfileForm() {
         try {
             const data = await Profiledata(Profile)
             const id = data._id;
+            const img = data.image
             const fullname = data.fullname
-            const set = await addprofileID(id, fullname)
+            const set = await addprofileID(id, fullname, img)
             initialState.userDetails.profileID = set.profileID;
             setProfile({})
             localStorage.setItem('currentUser', JSON.stringify(initialState.userDetails));

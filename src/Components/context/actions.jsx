@@ -59,6 +59,8 @@ export async function logout(dispatch) {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
     localStorage.removeItem('UserProfile');
+    localStorage.removeItem('workfile');
+    localStorage.removeItem('chat');
 }
 
 

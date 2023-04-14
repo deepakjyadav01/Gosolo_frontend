@@ -13,6 +13,8 @@ import { initialState } from "./Components/context/reducer";
 import { Addposts} from "./Components/posts/Addposts"
 import { React, useEffect } from "react";
 import ProfileData from "./Components/profile/ProfileData";
+import Freelancer from "./Components/profile/freelancer";
+import ChatWindow from "./Components/chat/ChatWindow";
 
 
 function App() {
@@ -39,11 +41,13 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/ViewPosts" element={<Viewposts />} />
+            <Route path="/Freelancer" element={<Freelancer />} />
             <Route path="/ViewPosts/:id" element={<Post />} />
             <Route path="/Profile" element={<Profile />} />
             <Route path="/ViewProfile" element={<ProfileData />} />
             <Route path="/Blogs" element={<Blogs />} />
             <Route path="/CreatePost" element={<Addposts />} />
+            <Route path="/Chat" element={<ChatWindow />} />
           </Routes>
         </div>
       </AuthProvider>

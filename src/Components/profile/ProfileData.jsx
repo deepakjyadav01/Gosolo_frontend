@@ -7,17 +7,8 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { getProfile, getImage } from "../services/profileAPI";
 import { baseURL } from "../services/api";
 import moment from "moment";
+import { getpostbyselectedID } from "../services/postAPI";
 
-const navigation = [
-   { name: "Dashboard", href: "#", current: true },
-   { name: "Team", href: "#", current: false },
-   { name: "Projects", href: "#", current: false },
-   { name: "Calendar", href: "#", current: false },
-];
-
-function classNames(...classes) {
-   return classes.filter(Boolean).join(" ");
-}
 export function ProfileData() {
    const [DOB, setDOB] = useState()
    const [bool, setbool] = useState(true)
@@ -26,9 +17,9 @@ export function ProfileData() {
    const [userpost, setuserpost] = useState([])
    const [ImageSrc, setImageSrc] = useState(null);
    const navigate = useNavigate()
+   const location = useLocation();
 
    async function fetchdata() {
-      console.log("hii")
       const id = initialState.userDetails.profileID
       const res = await getProfile(id)
       localStorage.setItem('UserProfile', JSON.stringify(res));
@@ -45,15 +36,25 @@ export function ProfileData() {
          setDOB(moment(res.DOB).utc().format('YYYY-MM-DD'))
       } setData(res)
    }
+   async function fetchpost() {
+      const id = initialState.userDetails.id
+      const r = await getpostbyselectedID(id)
+      if (r) {
+         setuserpost(r)
+      }
+   }
    const [Data, setData] = useState({})
    const [photo, setphoto] = useState([])
-   const location = useLocation();
 
    const viewposts = () => {
       navigate("/ViewPosts")
    }
    const createpost = () => {
       navigate("/CreatePost")
+   }
+
+   const topost = (id) => {
+      navigate(`/ViewPosts/:${id}`)
    }
 
    useEffect(() => {
@@ -70,11 +71,12 @@ export function ProfileData() {
          setprovider(true)
       }
       if (UserProfile) {
-        // console.log(UserProfile)
+         // console.log(UserProfile)
          setData(UserProfile)
          setDOB(moment(UserProfile.DOB).utc().format('YYYY-MM-DD'))
          getImage(UserProfile.image)
             .then(response => {
+               console.log(response)
                setImageSrc(response.request.responseURL);
             })
             .catch(error => {
@@ -84,6 +86,7 @@ export function ProfileData() {
          fetchdata()
          setbool(false)
       }
+      fetchpost()
 
 
    }, [])
@@ -185,7 +188,7 @@ export function ProfileData() {
                   {/* <!-- Experience and education --> */}
                   <div className="bg-white p-3 h-max my-4 py-8 rounded-xl shadow-2xl border-t-8  border-b-8 border-green-400">
                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mx-auto">
-                        <div className=" mx-auto">
+                        <div className=" mx-8">
                            <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mx-2 mb-3">
                               <span clas="text-green-500">
                                  <svg
@@ -297,44 +300,55 @@ export function ProfileData() {
                <div className="w-full mx-auto my-8 md:w-1/2  p-8 md:m-4 shadow-2xl bg-white border border-gray-200 rounded-lg  dark:bg-gray-800 dark:border-gray-700">
                   {freelancer && userpost.length > 0 && (
                      <>
-                        <div>
-                           <h1 className="flex justify-center mt-4 mb-4 text-4xl leading-8 text-gray-700 py-6">
-                              Your Posts
-                           </h1>
-                           <hr className=" bg-slate-600" />
-                           <hr className=" bg-slate-600" />
-                        </div>
-                        
-                        <div className="w-auto p-4 mt-8 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-                           <div className="flow-root">
-                              <ul
-                                 role="list"
-                                 className="divide-y divide-gray-200 dark:divide-gray-700"
-                              >
-                                 <li className="py-3 sm:py-4">
-                                    <div className="flex items-center space-x-4">
-                                       <div className="flex-1 min-w-0">
-                                          <p className="text-lg font-medium text-gray-900 truncate dark:text-white">
-                                             Title
-                                          </p>
-                                          <p className="text-base text-blue-800 hover:underline ">
-                                             category
-                                          </p>
-                                       </div>
-                                       <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                          <button className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
-                                             View
-                                          </button>
-
-                                       </div>
-                                    </div>
-
-                                 </li>
+                       
+                           <div>
+                              <div>
+                                 <h1 className="flex justify-center mt-4 mb-4 text-4xl leading-8 text-gray-700 py-6">
+                                    Your Posts
+                                 </h1>
                                  <hr className=" bg-slate-600" />
                                  <hr className=" bg-slate-600" />
-                              </ul>
+                              </div>
+                              <div className="flex justify-center  text-xl my-8 leading-6 text-gray-700">
+                                You have been selected for the following work.
+                              </div>
+
+                              <div className="w-auto p-4 mt-8 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                                 <div className="flow-root">
+                                 {userpost.map((q,i) => (
+                                    <ul
+                                       role="list"
+                                       className="divide-y divide-gray-200 dark:divide-gray-700"
+                                    >
+                                       <li className="py-3 sm:py-4">
+                                          <div className="flex items-center space-x-4">
+                                             <div className="flex-1 flex-wrap min-w-0">
+                                                <p className="text-base md:text-xl font-medium text-gray-900 truncate dark:text-white">
+                                                   {i+1}.{q.title}
+                                                </p>
+                                                <p className="text-sm md:text-lg text-blue-800 hover:underline ">
+                                                   {q.category}
+                                                </p>
+                                             </div>
+                                             <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                                <button onClick={()=>{topost(q._id) }}
+                                                className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                                   View
+                                                </button>
+
+                                             </div>
+                                          </div>
+
+                                       </li>
+                                       <hr className=" bg-slate-600" />
+                                       <hr className=" bg-slate-600" />
+                                    </ul>
+                                     ))}
+                                 </div>
+                              </div>
                            </div>
-                        </div>
+                       
+
                      </>
                   )}
                   {freelancer && userpost.length === 0 && (
@@ -346,7 +360,7 @@ export function ProfileData() {
                            <hr className=" bg-slate-600" />
                            <hr className=" bg-slate-600" />
                         </div>
-                        
+
                         <div className="flex justify-center  text-2xl my-8 leading-6 text-gray-700">
                            No posts Available!!! Look for them.
                         </div>
@@ -368,7 +382,7 @@ export function ProfileData() {
                            <hr className=" bg-slate-600" />
                            <hr className=" bg-slate-600" />
                         </div>
-                        
+
                         <div className="flex justify-center text-2xl my-4 leading-6 text-gray-700">
                            Inorder to create and view your posts, click on Post
                         </div>
