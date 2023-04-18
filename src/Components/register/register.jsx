@@ -5,8 +5,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { RegisterUser } from '../context/actions';
 import Madal from '../home/modal';
+import { reguser } from '../services/regAPI';
+
 // import { useAuthDispatch } from '../context/context';
 export function Register() {
+
 	const navigate = useNavigate();
 	// const dispatch = useAuthDispatch();
 	const RegUser = {
@@ -48,11 +51,18 @@ export function Register() {
 				errorMessage: null,
 				loading: true
 			});
-			let response = await RegisterUser(Data)
-			if (response) {
-				console.log(response)
-				alert("congrats");
-				navigate("/login")
+			try {
+				let response = await reguser(Data)
+				if (response) {
+					console.log(response)
+					setshowmodal(true)
+					setmessage("Account created succesfully")
+					setTimeout(() => {
+						navigate("/login")
+					}, 2000);
+				}
+			} catch (error) {
+				console.log(error)
 			}
 
 		} catch (error) {
@@ -61,6 +71,9 @@ export function Register() {
 	};
 	return (
 		<>
+			<div className="hidden">
+				<Madal show={showmodal} message={message} close={() => setshowmodal(false)} />
+			</div>
 			<div className="hidden">
 				<Madal show={showmodal} message={message} close={() => setshowmodal(false)} />
 			</div>
@@ -77,7 +90,7 @@ export function Register() {
 									className="outline-none p-2 mt-5 rounded-xl border"
 									type={"text"}
 									name="email" id="email" value={Data.email} onChange={handleInputChange}
-									placeholder="Email" disabled={Data.loading}
+									placeholder="Email"
 								/>
 
 								<div className="relative ">
@@ -85,7 +98,7 @@ export function Register() {
 										className="outline-none p-2 mt-3 rounded-xl border w-full"
 										type={pass}
 										name="password" id="password" value={Data.password} onChange={handleInputChange}
-										placeholder="password" disabled={Data.loading}
+										placeholder="password"
 									/>
 									<svg onClick={handleview}
 										xmlns="http://www.w3.org/2000/svg"
@@ -105,7 +118,7 @@ export function Register() {
 										className="outline-none p-2 mt-5 rounded-xl border w-full"
 										type={pass}
 										name="cnfpass" id="cnfpass" value={Data.cnfpass} onChange={handleInputChange}
-										placeholder="Confirm Password" disabled={Data.loading}
+										placeholder="Confirm Password"
 									/>
 									<svg onClick={handleview}
 										xmlns="http://www.w3.org/2000/svg"
@@ -120,14 +133,14 @@ export function Register() {
 									</svg>
 								</div>
 								<div className="mb-3 text-inherit ">
-									<select disabled={Data.loading} id="countries" name="role" value={Data.role} onChange={handleInputChange}
+									<select id="countries" name="role" value={Data.role} onChange={handleInputChange}
 										className="bg-inherit font-serif border border-gray-300 text-gray-600 text-base font-medium rounded-lg outline-none block w-full p-2.5">
 										<option defaultValue >Choose a Role</option>
 										<option value="freelancer">Freelancer</option>
 										<option value="provider">Provider</option>
 									</select>
 								</div>
-								<button type="submit" disabled={Data.loading}
+								<button type="submit"
 									className="bg-secondary rounded-xl text-white pt-2 pb-2 hover:bg-tertiary">
 									Register
 								</button>

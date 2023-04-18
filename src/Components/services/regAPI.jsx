@@ -8,8 +8,14 @@ export async function checkemail(email) {
 }
 
 
-export async function reguser(data) {
-    const response = await axios.post(`${baseURL}/register`, data, api.header)
+export async function reguser(Reg) {
+    let data = {
+        email: Reg.email,
+        role: Reg.role,
+        password: Reg.password,
+        cnfpass: Reg.cnfpass
+    }
+    const response = await axios.post(`${baseURL}/register`,  data, api.header)
     return response.data
 }
 

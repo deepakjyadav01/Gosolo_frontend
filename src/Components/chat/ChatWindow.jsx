@@ -9,6 +9,7 @@ function ChatWindow() {
     userIds: [],
     type: "chat"
   });
+  const [chatRoomId, setchatRoomId] = useState();
   const [User, setUser] = useState();
   const [Other, setOther] = useState();
   const [message, setMessage] = useState('');
@@ -17,13 +18,10 @@ function ChatWindow() {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    let chat = localStorage.getItem("chat")
-        ? JSON.parse(localStorage.getItem("chat"))
-        : "";
     if (message.trim()) {
-      const res = await postmsg(chat.chatRoom.chatRoomId,message)
-      if(res){
-        getmessages(chat.chatRoom.chatRoomId)
+      const res = await postmsg(chatRoomId, message)
+      if (res) {
+        getmessages(chatRoomId)
         setMessage('')
       }
     }
@@ -31,45 +29,49 @@ function ChatWindow() {
 
   async function fetchchat() {
     const ids = location.state.ids
-    if (chatstart.userIds.length < 2) {
+    if (chatstart.userIds.length <= 2) {
       ids.forEach(q => {
         setchatstart((prev) => ({
           ...prev,
           userIds: [...prev.userIds, q]
         }))
       });
+      console.log(chatstart)
+    }
+  }
+  async function fetchchatroom(chatstart) {
+    if (chatstart.userIds.length === 2) {
+      const res = await startchart(chatstart)
+      if (res) {
+        console.log(res)
+      }
     }
   }
   async function fetchroom() {
     if (chatstart.userIds.length === 2) {
-      let chat = localStorage.getItem("chat")
-        ? JSON.parse(localStorage.getItem("chat"))
-        : "";
+      const chat = await startchart(chatstart)
       if (chat) {
         console.log(chat)
-        const res = await getchatbyroomID(chat.chatRoom.chatRoomId)
-        if (res) {
-          const o = location.state.other
-          const u = location.state.me
-          chat.chatRoom.userIds.forEach(q => {
-            if (o === q._id) {
-              setOther(q)
-            }
-          });
-          chat.chatRoom.userIds.forEach(q => {
-            if (u === q._id) {
-              setUser(q)
-            }
-          });
-          console.log(res.conversation)
-          setMessages(res.conversation)
-        }
-      } else {
-        const res = await startchart(chatstart)
-        if (res) {
-          localStorage.setItem('chat', JSON.stringify(res));
-        }
+        setchatRoomId(chat.chatRoom.chatRoomId)
       }
+      const res = await getchatbyroomID(chat.chatRoom.chatRoomId)
+      if (res) {
+        const o = location.state.other
+        const u = location.state.me
+        chat.chatRoom.userIds.forEach(q => {
+          if (o === q._id) {
+            setOther(q)
+          }
+        });
+        chat.chatRoom.userIds.forEach(q => {
+          if (u === q._id) {
+            setUser(q)
+          }
+        });
+        console.log(res.conversation)
+        setMessages(res.conversation)
+      }
+
     }
   }
   async function getmessages(roomid) {
@@ -80,7 +82,10 @@ function ChatWindow() {
     fetchchat()
   }, [])
   useEffect(() => {
-    fetchroom()
+    if (chatstart && chatstart.userIds && chatstart.userIds != undefined && chatstart.userIds.length === 2) {
+      fetchchatroom(chatstart)
+      fetchroom()
+    }
   }, [chatstart])
   useEffect(() => {
   }, [User])
@@ -93,11 +98,11 @@ function ChatWindow() {
   return (
 
     <div className="h-screen flex flex-col">
-       <div className='bg-inherit  flex justify-center text-2xl text-black font-semibold mt-4 leading-9 capitalize'>
-            {Other && (
-              <h1>{Other.fullname}</h1>
-            )}
-          </div>
+      <div className='bg-inherit  flex justify-center text-2xl text-black font-semibold mt-4 leading-9 capitalize'>
+        {Other && (
+          <h1>{Other.fullname}</h1>
+        )}
+      </div>
       <ScrollableFeed className="flex-1 overflow-y-scroll border-blue-300  opacity-95 bg-[#9494fc] sm:mx-40 md:mt-4 mb-6 sm:px-4 shadow-2xl py-2 rounded-2xl ">
         <div className="w-full">
 

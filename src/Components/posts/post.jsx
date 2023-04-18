@@ -159,6 +159,7 @@ export function Post() {
     }, [bidders])
     useEffect(() => {
     }, [selectedFile])
+
     useEffect(() => {
         console.log(post)
         if (post !== undefined) {
@@ -345,7 +346,7 @@ export function Post() {
                                                         </div>
                                                         <div className="inline-flex items-center text-xs md:text-base font-semibold text-gray-900 dark:text-white">
 
-                                                            {initialState.userDetails.role[0] === 'FREELANCER' && (
+                                                            {initialState.userDetails.id === selected._id && initialState.userDetails.role[0] === 'FREELANCER' && (
                                                                 <button
                                                                     onClick={() => { tochat() }}
                                                                     className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
@@ -363,7 +364,7 @@ export function Post() {
                                         </div>
                                     </div>
                                 )}
-                                {Suser && !work && (
+                                {Suser && !work &&  (
                                     <div className="w-full p-4 my-12 h-auto bg-white border border-gray-200 rounded-2xl shadow-2xl sm:p-8 dark:bg-gray-800 dark:border-gray-700">
                                         <div className="flex items-center ml-4 mt-4 justify-between mb-2">
                                             <h5 className="text-2xl  font-bold leading-9 text-gray-900 dark:text-white ">
@@ -444,7 +445,7 @@ export function Post() {
                                     </div>
                                 )}
 
-                                {worksubmitted && work && (
+                                { Suser && worksubmitted && work && initialState.userDetails.id === selected._id && (
                                     <div className="w-full p-4 my-12 h-auto bg-white border border-gray-200 rounded-2xl shadow-2xl sm:p-8 dark:bg-gray-800 dark:border-gray-700">
                                         <div className="flex items-center ml-4 mt-4 justify-between mb-2">
                                             <h5 className="text-2xl  font-bold leading-9 text-gray-900 dark:text-white ">
