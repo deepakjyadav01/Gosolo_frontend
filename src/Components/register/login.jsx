@@ -62,11 +62,11 @@ export function Login() {
                             autoComplete='off' action="" className="flex flex-col gap-4">
                             <input className="outline-none p-2 mt-8 rounded-xl border"
                                 type="text" name="email" value={email}
-                                placeholder="Email" onChange={(e) => setEmail(e.target.value)} disabled={loading}
+                                placeholder="Email" onChange={(e) => setEmail(e.target.value)} 
                             />
                             <div className="relative">
                                 <input className="outline-none p-2 mt-3 rounded-xl border w-full"
-                                    type={pass} name="password" value={password} disabled={loading}
+                                    type={pass} name="password" value={password} 
                                     placeholder="Password" onChange={(e) => setPassword(e.target.value)}
                                 />
                                 <svg onClick={handleview} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="cursor-pointer bi bi-eye absolute top-1/2 right-3" viewBox="0 0 16 16 ">
@@ -83,7 +83,7 @@ export function Login() {
 
 
                             {/* <button className="bg-[#BDBBC0] hover:bg-white rounded-xl text-black pt-1 pb-1">Login</button> */}
-                            <button  disabled={loading}
+                            <button  
                                 className="bg-indigo-600 mt-4 hover:bg-tertiary rounded-xl text-white py-2">Login</button>
                         </form>
                         {/* <div className="mt-10 grid grid-cols-3 items-center text-gray-500">
