@@ -19,11 +19,11 @@ import ChatWindow from "./Components/chat/ChatWindow";
 
 function App() {
   
-  let user = localStorage.getItem("currentUser")
-    ? JSON.parse(localStorage.getItem("currentUser"))
+  let user = sessionStorage.getItem("currentUser")
+    ? JSON.parse(sessionStorage.getItem("currentUser"))
     : "";
-  let token = localStorage.getItem("currentUser")
-    ? JSON.parse(localStorage.getItem("currentUser")).accessToken
+  let token = sessionStorage.getItem("currentUser")
+    ? JSON.parse(sessionStorage.getItem("currentUser")).accessToken
     : "";
   if (user && token) {
     if (initialState.isAuthenticated === false){

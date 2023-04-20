@@ -22,7 +22,7 @@ export function ProfileData() {
    async function fetchdata() {
       const id = initialState.userDetails.profileID
       const res = await getProfile(id)
-      localStorage.setItem('UserProfile', JSON.stringify(res));
+      sessionStorage.setItem('UserProfile', JSON.stringify(res));
       // console.log(res)
       getImage(res.image)
          .then(response => {
@@ -63,8 +63,8 @@ export function ProfileData() {
       if (profileID === null) {
          navigate("/Profile")
       }
-      let UserProfile = localStorage.getItem("UserProfile")
-         ? JSON.parse(localStorage.getItem("UserProfile"))
+      let UserProfile = sessionStorage.getItem("UserProfile")
+         ? JSON.parse(sessionStorage.getItem("UserProfile"))
          : "";
       if (initialState.userDetails.role[0] === 'FREELANCER') {
          setfreelancer(true)

@@ -160,7 +160,7 @@ export function ProfileForm() {
             const set = await addprofileID(id, fullname, img)
             initialState.userDetails.profileID = set.profileID;
             setProfile({})
-            localStorage.setItem('currentUser', JSON.stringify(initialState.userDetails));
+            sessionStorage.setItem('currentUser', JSON.stringify(initialState.userDetails));
             navigate("/ViewProfile")
         } catch (error) {
             console.log(error)

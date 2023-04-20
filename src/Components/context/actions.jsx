@@ -37,7 +37,7 @@ export async function loginUser(dispatch, loginPayload) {
 
         if (res.data) {
           dispatch({ type:'LOGIN_SUCCESS', payload: res.data });
-            localStorage.setItem('currentUser', JSON.stringify(res.data));
+          sessionStorage.setItem('currentUser', JSON.stringify(res.data));
             return res.data
         }
 
@@ -56,11 +56,11 @@ export async function loginUser(dispatch, loginPayload) {
 
 export async function logout(dispatch) {
     dispatch({ type: 'LOGOUT' });
-    localStorage.removeItem('currentUser');
-    localStorage.removeItem('token');
-    localStorage.removeItem('UserProfile');
-    localStorage.removeItem('workfile');
-    localStorage.removeItem('chat');
+    sessionStorage.removeItem('currentUser');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('UserProfile');
+    sessionStorage.removeItem('workfile');
+    sessionStorage.removeItem('chat');
 }
 
 

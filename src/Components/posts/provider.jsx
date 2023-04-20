@@ -50,19 +50,13 @@ export function Provider(props) {
         }
     }
     async function fetchwork(file) {
-        // let workfile = localStorage.getItem("workfile")
-        //     ? JSON.parse(localStorage.getItem("workfile"))
-        //     : "";
-        // if (workfile) {
-        //     setfile(workfile)
-        // } else {
         if (file !== undefined ) {
             const res = await getImage(file)
             if (res) {
                 setwork(true)
 
                 setfile(res.request.responseURL)
-                localStorage.setItem('workfile', JSON.stringify(res.request.responseURL));
+                sessionStorage.setItem('workfile', JSON.stringify(res.request.responseURL));
             }
         }
     }
