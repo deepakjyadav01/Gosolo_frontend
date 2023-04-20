@@ -1,8 +1,11 @@
-/* eslint-disable import/no-anonymous-default-export */
+/* eslint-disable import/no-anonymous-default-export 
+https://gosolo-api.onrender.com/api/auth 
+https://gosolo-b-ackend.vercel.app/
+ */
 
 import { initialState } from "../context/reducer";
 
-export const baseURL = "https://gosolo-api.onrender.com/api/auth";
+export const baseURL = "https://gosolo-b-ackend.vercel.app/api/auth";
 export const API_URL = "http://localhost:3200/api/auth";
 export const header = {
     'Content-Type': 'application/json'

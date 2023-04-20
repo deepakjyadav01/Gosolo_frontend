@@ -26,6 +26,7 @@ export function ProfileData() {
       // console.log(res)
       getImage(res.image)
          .then(response => {
+            console.log(response)
             setImageSrc(response.request.responseURL);
          })
          .catch(error => {
