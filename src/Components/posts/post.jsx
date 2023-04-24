@@ -45,7 +45,6 @@ export function Post() {
         if (res) {
             setmessage("Congratulations!!! you have applied succesfully. If you get selected it will be reflected within your profile section")
             setshowmodal(true)
-            console.log(res)
             setbidders(res.user.bidders)
             setapplied(true)
             if (res.user.bidders) {
@@ -172,6 +171,13 @@ export function Post() {
             }
         }
     }, [post])
+    useEffect(() => {
+        console.log(bidders)
+       }, [bidders])
+    useEffect(() => {
+     console.log(ImageSrc)
+    }, [ImageSrc])
+    
     return (
         <>
             <div className="hidden">
