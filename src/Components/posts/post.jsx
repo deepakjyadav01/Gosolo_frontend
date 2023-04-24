@@ -47,13 +47,13 @@ export function Post() {
             setshowmodal(true)
             setbidders(res.user.bidders)
             setapplied(true)
-            if (res.user.bidders) {
-                res.user.bidders?.map(async (q) => {
-                    const img = await getImage(q.image)
-                    setImageSrc(prev => [...prev, img.request.responseURL])
-                })
+            // if (res.user.bidders) {
+            //     res.user.bidders?.map(async (q) => {
+            //         const img = await getImage(q.image)
+            //         setImageSrc(prev => [...prev, img.request.responseURL])
+            //     })
 
-            }
+            // }
 
         }
     }
@@ -76,10 +76,10 @@ export function Post() {
             }
             else {
                 setbidders(res.bidders)
-                res.bidders?.map(async (q) => {
-                    const img = await getImage(q.image)
-                    setImageSrc(prev => [...prev, img.request.responseURL])
-                })
+                // res.bidders?.map(async (q) => {
+                //     const img = await getImage(q.image)
+                //     setImageSrc(prev => [...prev, img.request.responseURL])
+                // })
                 fetchbidder()
 
             }
@@ -172,12 +172,19 @@ export function Post() {
         }
     }, [post])
     useEffect(() => {
-        console.log(bidders)
-       }, [bidders])
+        if (bidders && bidders.length > 0) {
+            bidders?.map(async (q) => {
+                const img = await getImage(q.image)
+                setImageSrc(prev => [...prev, img.request.responseURL])
+
+            })
+
+        }
+    }, [bidders])
     useEffect(() => {
-     console.log(ImageSrc)
+        console.log(ImageSrc)
     }, [ImageSrc])
-    
+
     return (
         <>
             <div className="hidden">
