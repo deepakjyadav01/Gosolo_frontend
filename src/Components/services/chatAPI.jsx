@@ -5,7 +5,8 @@ import { initialState } from "../context/reducer";
 export async function startchart(data) {
     const res={
         userIds:data.userIds,
-        type: data.type
+        type: data.type,
+        postID:data.postID
     }
     const response = await axios.post(`${baseURL}/initiate`, res, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
     return response.data

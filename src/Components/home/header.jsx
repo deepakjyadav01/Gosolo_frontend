@@ -96,6 +96,12 @@ export function Header() {
                             >
                                 Posts
                             </Link>
+                            <Link
+                                to="/Blogs"
+                                className="text-lg font-semibold leading-6 text-gray-900"
+                            >
+                                Blogs
+                            </Link>
                         </div>
                         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
                             {initialState.isAuthenticated ? (

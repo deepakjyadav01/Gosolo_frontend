@@ -7,7 +7,8 @@ function ChatWindow() {
   const location = useLocation();
   const [chatstart, setchatstart] = useState({
     userIds: [],
-    type: "chat"
+    type: "chat",
+    postID:''
   });
   const [chatRoomId, setchatRoomId] = useState();
   const [User, setUser] = useState();
@@ -29,14 +30,14 @@ function ChatWindow() {
 
   async function fetchchat() {
     const ids = location.state.ids
-    if (chatstart.userIds.length <= 2) {
+    chatstart.postID = location.state.postID
+    if (chatstart.userIds.length < 2) {
       ids.forEach(q => {
         setchatstart((prev) => ({
           ...prev,
           userIds: [...prev.userIds, q]
         }))
       });
-      console.log(chatstart)
     }
   }
   async function fetchchatroom(chatstart) {
@@ -86,6 +87,7 @@ function ChatWindow() {
       fetchchatroom(chatstart)
       fetchroom()
     }
+    console.log(chatstart)
   }, [chatstart])
   useEffect(() => {
   }, [User])

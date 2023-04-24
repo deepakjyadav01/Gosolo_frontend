@@ -104,7 +104,7 @@ export function Post() {
         const sID = initialState.userDetails.id
         var a = [];
         a.push(sID, iID);
-        navigate('/Chat', { state: { ids: a ,me:sID, other: iID } })
+        navigate('/Chat', { state: { ids: a, me: sID, other: iID, postID: post._id } })
     }
     const setfileA = () => {
         setfile(true)
@@ -364,7 +364,7 @@ export function Post() {
                                         </div>
                                     </div>
                                 )}
-                                {Suser && !work &&  (
+                                {Suser && !work && initialState.userDetails.id === selected._id && (
                                     <div className="w-full p-4 my-12 h-auto bg-white border border-gray-200 rounded-2xl shadow-2xl sm:p-8 dark:bg-gray-800 dark:border-gray-700">
                                         <div className="flex items-center ml-4 mt-4 justify-between mb-2">
                                             <h5 className="text-2xl  font-bold leading-9 text-gray-900 dark:text-white ">
@@ -445,7 +445,7 @@ export function Post() {
                                     </div>
                                 )}
 
-                                { Suser && worksubmitted && work && initialState.userDetails.id === selected._id && (
+                                {Suser && worksubmitted && work && initialState.userDetails.id === selected._id && (
                                     <div className="w-full p-4 my-12 h-auto bg-white border border-gray-200 rounded-2xl shadow-2xl sm:p-8 dark:bg-gray-800 dark:border-gray-700">
                                         <div className="flex items-center ml-4 mt-4 justify-between mb-2">
                                             <h5 className="text-2xl  font-bold leading-9 text-gray-900 dark:text-white ">

@@ -8,6 +8,7 @@ import { getProfile, getImage } from "../services/profileAPI";
 import { baseURL } from "../services/api";
 import moment from "moment";
 import { getpostbyselectedID } from "../services/postAPI";
+import { getblogByUserID } from "../services/blogAPI";
 
 export function ProfileData() {
    const [DOB, setDOB] = useState()
@@ -15,6 +16,7 @@ export function ProfileData() {
    const [freelancer, setfreelancer] = useState(false)
    const [provider, setprovider] = useState(false)
    const [userpost, setuserpost] = useState([])
+   const [blogpost, setblogpost] = useState([])
    const [ImageSrc, setImageSrc] = useState(null);
    const navigate = useNavigate()
    const location = useLocation();
@@ -44,6 +46,15 @@ export function ProfileData() {
          setuserpost(r)
       }
    }
+   async function fetchblog() {
+      const id = initialState.userDetails.id
+      console.log(id)
+      const r = await getblogByUserID(id)
+      if (r) {
+         console.log(r)
+         setblogpost(r)
+      }
+   }
    const [Data, setData] = useState({})
    const [photo, setphoto] = useState([])
 
@@ -52,6 +63,12 @@ export function ProfileData() {
    }
    const createpost = () => {
       navigate("/CreatePost")
+   }
+   const blog = () => {
+      navigate("/CreateBlog")
+   }
+   const viewblog = (ID) => {
+      navigate("/ViewBlog", { state: { id: ID } })
    }
 
    const topost = (id) => {
@@ -88,6 +105,7 @@ export function ProfileData() {
          setbool(false)
       }
       fetchpost()
+      fetchblog()
 
 
    }, [])
@@ -301,22 +319,22 @@ export function ProfileData() {
                <div className="w-full mx-auto my-8 md:w-1/2  p-8 md:m-4 shadow-2xl bg-white border border-gray-200 rounded-lg  dark:bg-gray-800 dark:border-gray-700">
                   {freelancer && userpost.length > 0 && (
                      <>
-                       
-                           <div>
-                              <div>
-                                 <h1 className="flex justify-center mt-4 mb-4 text-4xl leading-8 text-gray-700 py-6">
-                                    Your Posts
-                                 </h1>
-                                 <hr className=" bg-slate-600" />
-                                 <hr className=" bg-slate-600" />
-                              </div>
-                              <div className="flex justify-center  text-xl my-8 leading-6 text-gray-700">
-                                You have been selected for the following work.
-                              </div>
 
-                              <div className="w-auto p-4 mt-8 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-                                 <div className="flow-root">
-                                 {userpost.map((q,i) => (
+                        <div>
+                           <div>
+                              <h1 className="flex justify-center mt-4 mb-4 text-4xl leading-8 text-gray-700 py-6">
+                                 Your Posts
+                              </h1>
+                              <hr className=" bg-slate-600" />
+                              <hr className=" bg-slate-600" />
+                           </div>
+                           <div className="flex justify-center  text-xl my-8 leading-6 text-gray-700">
+                              You have been selected for the following work.
+                           </div>
+
+                           <div className="w-auto p-4 mt-8 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                              <div className="flow-root">
+                                 {userpost.map((q, i) => (
                                     <ul
                                        role="list"
                                        className="divide-y divide-gray-200 dark:divide-gray-700"
@@ -325,15 +343,15 @@ export function ProfileData() {
                                           <div className="flex items-center space-x-4">
                                              <div className="flex-1 flex-wrap min-w-0">
                                                 <p className="text-base md:text-xl font-medium text-gray-900 truncate dark:text-white">
-                                                   {i+1}.{q.title}
+                                                   {i + 1}.{q.title}
                                                 </p>
                                                 <p className="text-sm md:text-lg text-blue-800 hover:underline ">
                                                    {q.category}
                                                 </p>
                                              </div>
                                              <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                                <button onClick={()=>{topost(q._id) }}
-                                                className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                                <button onClick={() => { topost(q._id) }}
+                                                   className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
                                                    View
                                                 </button>
 
@@ -344,11 +362,11 @@ export function ProfileData() {
                                        <hr className=" bg-slate-600" />
                                        <hr className=" bg-slate-600" />
                                     </ul>
-                                     ))}
-                                 </div>
+                                 ))}
                               </div>
                            </div>
-                       
+                        </div>
+
 
                      </>
                   )}
@@ -403,36 +421,50 @@ export function ProfileData() {
                         Your Blogs
                      </h1>
                   </div>
-                  <div className="w-auto p-4  bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-                     <div className="flow-root">
-                        <ul
-                           role="list"
-                           className="divide-y divide-gray-200 dark:divide-gray-700"
-                        >
-                           <li className="py-3 sm:py-4">
-                              <div className="flex items-center space-x-4">
-                                 <div className="flex-1 min-w-0">
-                                    <p className="text-lg font-medium text-gray-900 truncate dark:text-white">
-                                       Title
-                                    </p>
-                                    <p className="text-base text-blue-800 hover:underline ">
-                                       category
-                                    </p>
-                                 </div>
-                                 <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                    <button className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
-                                       View
-                                    </button>
-
-                                 </div>
-                              </div>
-
-                           </li>
-                           <hr className=" bg-slate-600" />
-                           <hr className=" bg-slate-600" />
-                        </ul>
-                     </div>
+                  <div className="flex justify-center text-2xl my-4 leading-6 text-gray-700">
+                     Inorder to create your Blog, click on Blog
                   </div>
+                  <div className="flex justify-center my-8 text-base font-semibold text-gray-900 p-2 dark:text-white">
+                     <button onClick={blog}
+                        className="mr-2 my-1 uppercase tracking-wider p-4 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-base font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                        Blog
+                     </button>
+                  </div>
+                  {blogpost && blogpost.length > 0 && blogpost.map((q, i) => (
+                  <div className="w-auto p-4  bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                        <div className="flow-root">
+                           <ul
+                              role="list"
+                              className="divide-y divide-gray-200 dark:divide-gray-700"
+                           >
+                              <li className="py-2 sm:py-4">
+                                 <div className="flex items-center space-x-4">
+                                    <div className="flex-1 min-w-0">
+                                       <p className="text-lg font-medium text-gray-900 truncate dark:text-white">
+                                          {q.title}
+                                       </p>
+                                       <p className="text-base text-blue-800 hover:underline ">
+                                          {q.category}
+                                       </p>
+                                    </div>
+                                    <div className="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
+                                       <button onClick={() => {
+                                          viewblog(q._id)
+                                       }}
+                                          className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                          View
+                                       </button>
+
+                                    </div>
+                                 </div>
+
+                              </li>
+                              <hr className=" bg-slate-600" />
+                           </ul>
+                        </div>
+                    
+                  </div>
+                   ))}
                </div>
             </div>
          </div>

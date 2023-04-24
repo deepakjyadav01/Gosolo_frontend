@@ -1,7 +1,9 @@
 /* eslint-disable import/no-anonymous-default-export */
 import { reguser, checkemail } from "../services/regAPI";
 import axios from "axios";
-import {header, baseURL, API_URL} from "../services/api"
+import { header, baseURL, API_URL } from "../services/api"
+
+
 
 export async function checkEmail(email) {
     try {
@@ -22,35 +24,31 @@ export async function RegisterUser(Reg) {
         let result = await reguser(data)
         return result;
     } catch (error) {
-        if(error.response.data.message){
+        if (error.response.data.message) {
             alert(`${error.response.data.message}`)
-        }else {
+        } else {
             alert(`${error.response.data}. User do not exist`)
         }
     }
 }
-export async function loginUser(dispatch, loginPayload) {
+export async function loginUser(loginPayload) {
 
     try {
-        dispatch({ type: 'REQUEST_LOGIN', payload: loginPayload});
         const res = await axios.post(`${baseURL}/login`, loginPayload, header)
 
         if (res.data) {
-          dispatch({ type:'LOGIN_SUCCESS', payload: res.data });
-          sessionStorage.setItem('currentUser', JSON.stringify(res.data));
-            return res.data
+            sessionStorage.setItem('currentUser', JSON.stringify(res.data));
+            return res
         }
-
-        dispatch({ type: 'LOGIN_ERROR', error: res.data.errors[0] });
         return;
     } catch (error) {
-        
-        if(error.response.data.message){
-            alert(`${error.response.data.message}`)
-        }else {
-            alert(`${error.response.data}`)
-        }
-        
+        return error
+        // if(error.response.data.message){
+        //     alert(`${error.response.data.message}`)
+        // }else {
+        //     alert(`${error.response.data}`)
+        // }
+
     }
 }
 

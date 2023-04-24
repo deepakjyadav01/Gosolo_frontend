@@ -3,7 +3,6 @@ import img2 from '../assets/signup.jpg'
 import PlaceholderImg from '../assets/Lsignup.jpg'
 import { Link, useNavigate } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { RegisterUser } from '../context/actions';
 import Madal from '../home/modal';
 import { reguser } from '../services/regAPI';
 

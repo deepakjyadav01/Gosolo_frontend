@@ -54,7 +54,6 @@ export function Provider(props) {
             const res = await getImage(file)
             if (res) {
                 setwork(true)
-
                 setfile(res.request.responseURL)
                 sessionStorage.setItem('workfile', JSON.stringify(res.request.responseURL));
             }
@@ -98,7 +97,7 @@ export function Provider(props) {
         const iID = initialState.userDetails.id;
         var a = [];
         a.push(sID, iID);
-        navigate('/Chat', { state: { ids: a,me:iID, other: sID } })
+        navigate('/Chat', { state: { ids: a,me:iID, other: sID, postID: post._id} })
     }
 
     useEffect(() => {
@@ -157,18 +156,6 @@ export function Provider(props) {
                              </div>
                              <div class="flex flex-col items-center mt-8">
                                  <div class="space-y-4 ">
-                                     <ul class="list-disc ml-4 space-y-2">
-                                         <span class="text-lg font-semibold text-gray-800 -ml-4">
-                                             Minimum qualifications:
-                                         </span>
-                                         <li class="text-gray-600 text-base">
-                                             Bachelor's degree in Design, related field, or equifalent
-                                             practical experience.
-                                         </li>
-                                         <li class="text-gray-600 text-base">
-                                             7 years of experience as a UX or Interaction Designer.
-                                         </li>
-                                     </ul>
                                      <ul class="list-disc ml-4 font-bold space-y-2 py-4">
                                          <span class="font-semibold text-lg text-gray-800 -ml-4">
                                              Details

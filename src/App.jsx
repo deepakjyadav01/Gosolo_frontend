@@ -15,6 +15,8 @@ import { React, useEffect } from "react";
 import ProfileData from "./Components/profile/ProfileData";
 import Freelancer from "./Components/profile/freelancer";
 import ChatWindow from "./Components/chat/ChatWindow";
+import { CreateBlog } from "./Components/blogs/CreateBlog";
+import ViewBlog from "./Components/blogs/ViewBlog";
 
 
 function App() {
@@ -39,14 +41,16 @@ function App() {
             <Route exact path="/home" element={<Home />} />
             <Route path="/" element={<Navigate replace to="/home" />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/ViewPosts" element={<Viewposts />} />
-            <Route path="/Freelancer" element={<Freelancer />} />
-            <Route path="/ViewPosts/:id" element={<Post />} />
+            <Route path="/register" element={<Register />} />        
             <Route path="/Profile" element={<Profile />} />
             <Route path="/ViewProfile" element={<ProfileData />} />
-            <Route path="/Blogs" element={<Blogs />} />
+            <Route path="/ViewPosts" element={<Viewposts />} />
+            <Route path="/Freelancer" element={<Freelancer />} />
             <Route path="/CreatePost" element={<Addposts />} />
+            <Route path="/ViewPosts/:id" element={<Post />} />
+            <Route path="/Blogs" element={<Blogs />} />
+            <Route path="/ViewBlog" element={<ViewBlog />} />
+            <Route path="/CreateBlog" element={<CreateBlog />} />
             <Route path="/Chat" element={<ChatWindow />} />
           </Routes>
         </div>
