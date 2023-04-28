@@ -49,7 +49,7 @@ export function Provider(props) {
             if (res.confirm === "no") {
                 setwork(false)
             }
-            if(res.Paystatus === "paid"){
+            if (res.Paystatus === "paid") {
                 setPaystatus(res.Paystatus)
             }
         }
@@ -60,7 +60,6 @@ export function Provider(props) {
             if (res) {
                 setwork(true)
                 setfile(res.request.responseURL)
-                sessionStorage.setItem('workfile', JSON.stringify(res.request.responseURL));
             }
         }
     }
@@ -87,7 +86,7 @@ export function Provider(props) {
                 setwork(false)
             } else {
                 setsuccess(true)
-                setpost()
+                setpost(res.data)
             }
         }
     }
@@ -180,20 +179,31 @@ export function Provider(props) {
     }, [])
     useEffect(() => {
         console.log(post)
-        if (post.file && post.file !== null) {
-            console.log("hii")
-            fetchwork(post.file)
-        } else if (post.worksample && Object.keys(post.worksample).length > 0) {
-            fetchWS()
-            console.log("hii")
+    }, [post])
+    useEffect(() => {
+        if (post && post.file === undefined) {
+        } else{
+            if (post && post.file !== null) {
+                fetchwork(post.file)
+            }
         }
-        if (post.confirm === "yes") {
+    }, [post])
+    useEffect(() => {
+           if(post&& post.worksample !== undefined  ){
+            if (post && post.worksample !== null&& Object.keys(post.worksample).length > 0) {
+                fetchWS()
+            }
+           }
+    }, [post])
+    useEffect(() => {
+        if (post && post.confirm === "yes") {
             setsuccess(true)
         }
-        if(post && post._id){
+        if (post && post._id) {
             fetchpayment(post._id)
         }
     }, [post])
+
     useEffect(() => {
         console.log(selected)
     }, [selected])
@@ -201,7 +211,7 @@ export function Provider(props) {
     }, [ImageSrc])
     useEffect(() => {
     }, [bidders])
-    useEffect( () => {
+    useEffect(() => {
         console.log(payment)
     }, [payment])
 
@@ -398,7 +408,7 @@ export function Provider(props) {
                                                     Review Work
                                                 </h5>
                                             )}
-                                            {success   && (
+                                            {success && (
                                                 <h5 className="text-2xl  font-bold leading-9 text-gray-900 dark:text-white ">
                                                     Final Work
                                                 </h5>
@@ -438,7 +448,7 @@ export function Provider(props) {
                                                     </div>
                                                 </div>
                                             )}
-                                            {success && !payment.data && (
+                                            {success && payment.message === "No" && (
                                                 <div className="my-6">
                                                     <h5 className="text-xl  font-semibold leading-9 text-gray-900 dark:text-white ">
                                                         Proceed to payment
@@ -451,20 +461,20 @@ export function Provider(props) {
                                                     </div>
                                                 </div>
                                             )}
-                                            {success && payment.data && Paystatus === "unpaid" &&(
+                                            {success && payment.data && Paystatus === "unpaid" && (
                                                 <div className="my-6">
                                                     <h5 className="text-xl  font-semibold leading-9 text-gray-900 dark:text-white ">
-                                                       Thank you for completing the payment. {payment.message}. wait until freelancer verifies it.!
+                                                        Thank you for completing the payment. {payment.message}. wait until freelancer verifies it.!
                                                     </h5>
-                                                    
+
                                                 </div>
                                             )}
-                                            {success && payment.data && Paystatus === "paid" &&(
+                                            {success && payment.data && Paystatus === "paid" && (
                                                 <div className="my-6">
                                                     <h5 className="text-2xl  font-semibold leading-9 text-gray-900 dark:text-white ">
-                                                      Thank you. This post is completed.
+                                                        Thank you. This post is completed.
                                                     </h5>
-                                                    
+
                                                 </div>
                                             )}
 

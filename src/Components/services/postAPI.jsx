@@ -77,6 +77,10 @@ export async function getposts() {
     const response = await axios.get(`${baseURL}/getposts`, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
     return response.data
 }
+export async function getpostsbycategory(category) {
+    const response = await axios.get(`${baseURL}/getposts/${category}`, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+    return response.data
+}
 export async function deletepostbyid(id) {
 
     const response = await axios.delete(`${baseURL}/deletePostBy/${id}`, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })

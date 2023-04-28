@@ -5,7 +5,6 @@ import { getblogs } from '../services/blogAPI';
 
 export function Blogs() {
   const [blog, setblog] = useState([])
-  const [imageUrls, setImageUrls] = useState([]);
 
   const navigate = useNavigate()
   async function fetchblogs() {
@@ -29,17 +28,7 @@ export function Blogs() {
   useEffect(() => {
     fetchblogs()
   }, [])
-  useEffect(() => {
-    const fetchImages = async () => {
-      const urls = await Promise.all([
-        fetch("https://source.unsplash.com/category/nature/?random").then((res) => res.url),
-        fetch("https://source.unsplash.com/category/food/?random").then((res) => res.url),
-        fetch("https://source.unsplash.com/category/technology/?random").then((res) => res.url),
-      ]);
-      setImageUrls(urls);
-    };
-    fetchImages();
-  }, []);
+  
 
   return (
     <>
@@ -67,12 +56,13 @@ export function Blogs() {
                 </div>
                 <div class="max-w-5xl mx-auto mt-6">
                 {blog.map((q, i) => (
+                  <div className='my-4'>
                   <div class="py-12 border-t-2 border-gray-100 bg-white rounded-2xl shadow-lg p-4">
                     <div class="flex flex-wrap lg:flex-nowrap items-center">
                       <div class="w-full lg:w-auto px-4 mb-8 lg:mb-0">
                         <img
                           class="block w-44 h-20 rounded-lg"
-                          src={imageUrls[i]}
+                          src={`https://picsum.photos/500/350?random=${i}`}
                           alt="Nature"
                         />
                       </div>
@@ -118,6 +108,7 @@ export function Blogs() {
                         </button>
                       </div>
                     </div>
+                  </div>
                   </div>
                     ))}
                   

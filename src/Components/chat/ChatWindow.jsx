@@ -60,7 +60,9 @@ function ChatWindow() {
     if (chatstart.userIds.length === 2) {
       const res = await startchart(chatstart)
       if (res) {
+        console.log(res)
         setchatRoomId(res.chatRoom.chatRoomId)
+        fetchroom()
       }
     }
   }
@@ -98,10 +100,9 @@ function ChatWindow() {
     fetchchat()
   }, [])
   useEffect(() => {
-    if (chatstart && chatstart.userIds && chatstart.userIds != undefined && chatstart.userIds.length === 2) {
+    if (chatstart && chatstart.userIds.length && chatstart.userIds.length === 2) {
       fetchchatroom(chatstart)
       fetchroom()
-
     }
   }, [chatstart])
   useEffect(() => {

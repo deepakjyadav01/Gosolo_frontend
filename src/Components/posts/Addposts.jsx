@@ -58,7 +58,6 @@ import MEDitor from '@uiw/react-md-editor';
         if (res) {
             console.log(res)
             setuserpost(res)
-
         }
     }
 
@@ -267,7 +266,7 @@ import MEDitor from '@uiw/react-md-editor';
                                             <div className="h-42 overflow-hidden relative">
                                                 <img
                                                     className="mb-2 rounded-t-2xl"
-                                                    src="https://picsum.photos/500/350?random=5"
+                                                    src={`https://picsum.photos/500/350?random=${i}`}
                                                     alt=""
                                                 />
                                             </div>

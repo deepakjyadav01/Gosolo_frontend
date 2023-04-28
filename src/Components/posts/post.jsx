@@ -105,7 +105,11 @@ export function Post() {
     async function fetchpayment() {
         const result = await getpaymentbypostID(post._id)
         if (result) {
-            setpayment(result)
+            if(result.data && result.data.length ===1){
+                setpayment(result)
+            }else if(result.message === "No"){
+                setpayment(result)
+            }
         }
     }
     const toProfile = (id) => {
@@ -489,12 +493,12 @@ export function Post() {
                                                 Your work
                                             </h5>
                                         </div>
-                                        {!payment.data && (
+                                        {payment && payment.message === "No" && (
                                             <div className="flex ml-4 text-xl my-8 mb-8 leading-6 text-gray-700">
                                                 Wait until the Provider reviews and proceeds with payment.
                                             </div>
                                         )}
-                                        {payment.data && paystatus === "unpaid" && (
+                                        {payment.data && payment.data.length ===1 && paystatus === "unpaid" && (
                                             <div className="my-6">
                                                 <h5 className="text-xl  font-semibold leading-9 text-gray-900 dark:text-white ">
                                                     {post.Provider.fullname} has made payment. Verify payment
