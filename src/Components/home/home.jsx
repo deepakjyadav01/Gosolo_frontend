@@ -7,25 +7,25 @@ const features = [
     {
         name: 'For Everyone',
         description:
-            'For each and every person. Just sign up and start looking for posts and jobs. find work from all possible domains.',
+            'For each and every person. Just sign up and start looking for posts and jobs. Find work from all possible domains.',
         icon: CloudArrowUpIcon,
     },
     {
-        name: 'Secure',
+        name: 'Secured',
         description:
-            'Sit quis amet rutrum tellus ullamcorper ultricies libero dolor eget. Sem sodales gravida quam turpis enim lacus amet.',
+            'By verifying the freelancers, we provide clients with a sense of security that they are hiring competent and trustworthy freelancers.',
         icon: LockClosedIcon,
     },
     {
         name: 'For Every Professional',
         description:
-            'Quisque est vel vulputate cursus. Risus proin diam nunc commodo. Lobortis auctor congue commodo diam neque.',
+            ' Working on our portal can also provide professionals with exposure to different industries and working cultures. ',
         icon: ArrowPathIcon,
     },
     {
         name: 'Trustworthy',
         description:
-            'Arcu egestas dolor vel iaculis in ipsum mauris. Tincidunt mattis aliquet hac quis. Id hac maecenas ac donec pharetra eget.',
+            'Use of Razorpay for securing payments.This system allows clients to make payments for completed work directly through the portal.',
         icon: FingerPrintIcon,
     },
 ]

@@ -5,6 +5,8 @@ import { getblogs } from '../services/blogAPI';
 
 export function Blogs() {
   const [blog, setblog] = useState([])
+  const [imageUrls, setImageUrls] = useState([]);
+
   const navigate = useNavigate()
   async function fetchblogs() {
     const res = await getblogs()
@@ -27,80 +29,114 @@ export function Blogs() {
   useEffect(() => {
     fetchblogs()
   }, [])
+  useEffect(() => {
+    const fetchImages = async () => {
+      const urls = await Promise.all([
+        fetch("https://source.unsplash.com/category/nature/?random").then((res) => res.url),
+        fetch("https://source.unsplash.com/category/food/?random").then((res) => res.url),
+        fetch("https://source.unsplash.com/category/technology/?random").then((res) => res.url),
+      ]);
+      setImageUrls(urls);
+    };
+    fetchImages();
+  }, []);
 
   return (
     <>
-      <div className="bg-inherit px-8 my-20 font-sans  font-medium">
-        <div class="h-max  grid grid-col-1 lg:grid-cols-3 xl:grid-cols-4 md:grid-cols-2 grid-row-4 gap-10 ">
-          <div class="text-black bg-white text-center mx-2 text-5xl rounded-2xl shadow-2xl row-span-6 md:row-span-3 my-12 ">
-            ads
-          </div>
 
-          {blog.map((q, i) => (
 
-            <div className="bg-white w-2/3 md:w-full mx-auto  font-sans my-12 text-black border-slate-300 rounded-2xl shadow-2xl">
-              <div className="h-42 overflow-hidden relative">
-                <img
-                  className="mb-2 rounded-t-2xl  "
-                  src="https://picsum.photos/500/350?random=5"
-                  alt=""
-                />
-              </div>
-              <div className=" w-full bg-white px-4 py-4 shadow-md rounded-b-2xl transition transform duration-500 ">
-                <div className="flex flex-col justify-start">
-                  <div className="flex justify-between items-center w-auto">
-                    <div className="ml-1 text-xl w-auto shrink max-h-11 text-clip capitalize font-semibold text-bookmark-blue flex flex-1 items-center mb-2">
-                      <div> {q.title} </div>
+      
+            <div>
+            <section class="relative py-20 overflow-hidden">
+              <img
+                class="absolute top-0 right-0 xl:mt-10 -mr-24 lg:-mr-0"
+                src="saturn-assets/images/blog/star-circle-right.svg"
+                alt=""
+              />
+              <img
+                class="hidden sm:block absolute bottom-0 left-0 -mb-48 lg:mb-0"
+                src="saturn-assets/images/blog/blue-light-left.png"
+                alt=""
+              />
+              <div class="relative container px-4 mx-auto">
+                <div class="max-w-2xl mx-auto mb-15 text-center">
+                  <span class="inline-block py-1 px-3 mb-4 text-xs font-semibold text-orange-900 bg-orange-50 rounded-full">
+                     BLOGS
+                  </span>
+                  
+                </div>
+                <div class="max-w-5xl mx-auto mt-6">
+                {blog.map((q, i) => (
+                  <div class="py-12 border-t-2 border-gray-100 bg-white rounded-2xl shadow-lg p-4">
+                    <div class="flex flex-wrap lg:flex-nowrap items-center">
+                      <div class="w-full lg:w-auto px-4 mb-8 lg:mb-0">
+                        <img
+                          class="block w-44 h-20 rounded-lg"
+                          src={imageUrls[i]}
+                          alt="Nature"
+                        />
+                      </div>
+                      <div class="w-full lg:w-9/12 px-4 mb-10 lg:mb-0">
+                        <div class="max-w-2xl">
+                          
+                          <p class="text-2xl mb-1 font-semibold text-gray-900">
+                           {q.title}
+                          </p>
+                          <span class="block text-gray-400 mb-1"> {q.category} </span>
+                        </div>
+                      </div>
+                      <div class="w-full lg:w-auto px-4 ml-auto text-right">
+                        <button onClick={()=>{ gotoblog(q._id)}}
+                          class="inline-flex items-center text-xl font-semibold text-orange-900 hover:text-gray-900"
+                          
+                        >
+                          <span class="mr-2">Read</span>
+                          
+                          <svg
+                            class="animate-bounce"
+                            width="16"
+                            height="16"
+                            viewbox="0 0 16 16"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1.33301 14.6668L14.6663 1.3335"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            ></path>
+                            <path
+                              d="M1.33301 1.3335H14.6663V14.6668"
+                              stroke="currentColor"
+                              stroke-width="2"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                            ></path>
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div className=" ml-1 mt-2 text-base text-gray-500 flex space-x-1 items-center">
-                    <div className="font-medium"> {q.category} </div>
-                  </div>
-                  <div className=" text-base text-gray-500 flex space-x-1 items-center mt-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="w-6 h-6 mr-2"
+                    ))}
+                  
+                  <div class="pt-12 border-t-2 border-gray-100 text-center">
+                    <a
+                      class="relative group inline-block py-4 px-7 font-semibold text-orange-900 hover:text-orange-50 rounded-full bg-orange-50 transition duration-300 overflow-hidden"
+                      href="#"
                     >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                      />
-                    </svg>
-
-                    <span className="ml-4">
-                      {" "}
-                      blog by: <span> {q.user.fullname} </span>
-                      <span className=" hover:underline cursor-pointer">
-
-                      </span>
-                    </span>
-                  </div>
-
-                  <hr className="h-px my-4 ml-2 mr-2 bg-gray-200 border-0 dark:bg-gray-700" />
-
-                  {/* <p className="space-x-1 px-4 text-base">Posted by ..... "Bradly Ramos"</p> */}
-                  <div>
-                    <div className="flex flex-col mb-4 mt-4">
-                      <button onClick={() => { gotoblog(q._id) }}
-                        className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer"
-                      >
-                        View Details
-                      </button>
-
-                    </div>
+                      <div class="absolute top-0 right-full w-full h-full bg-gray-900 transform group-hover:translate-x-full group-hover:scale-102 transition duration-500"></div>
+                      <span class="relative">See More Articles</span>
+                    </a>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            </section>
+          </div>
+        
 
-        </div>
-      </div></>
+      </>
   )
 
 }

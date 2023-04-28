@@ -13,6 +13,10 @@ export function Viewposts(props) {
   const toPost = (id) => {
     navigate(`/ViewPosts/:${id}`);
   }
+  // const searchpostbyC = async () => {
+  //   const response = await axios.get(`https://your-backend-api-url/posts?q=${searchTerm}`);
+  //   setPosts(response.data);
+  // };
   async function fetchpost() {
     const res = await getposts()
     if (res) {
@@ -20,7 +24,7 @@ export function Viewposts(props) {
       if (res) {
         res.forEach(q => {
           if (q.Provider._id === initialState.userDetails.id) {
-            let filteredArray =  res.filter(item => item !== q)
+            let filteredArray = res.filter(item => item !== q)
             setpost(filteredArray)
           }
         });
@@ -49,7 +53,19 @@ export function Viewposts(props) {
       <div className="bg-inherit px-8 my-20 font-sans  font-medium">
         <div class="h-max  grid grid-col-1 lg:grid-cols-3 xl:grid-cols-4 md:grid-cols-2 grid-row-4 gap-10 ">
           <div class="text-black bg-white text-center mx-2 text-5xl rounded-2xl shadow-2xl row-span-6 md:row-span-3 my-12 ">
-
+            {/* <div className="flex flex-col items-center justify-center">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={handleSearch}
+                placeholder="Search for posts"
+                className="px-4 py-2 mb-4 border border-gray-300 rounded-lg"
+              />
+              <button onClick={searchpostbyC}
+                className="mr-2 my-1 uppercase tracking-wider px-2 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer"
+              >Search
+              </button>
+            </div> */}
           </div>
 
           {post?.map((q, i) => (
@@ -132,13 +148,13 @@ export function Viewposts(props) {
                       />
                     </svg>
 
-                     <span className="ml-4">
+                    <span className="ml-4">
                       {" "}
                       Posted by: <span> </span>
                       <span className=" hover:underline cursor-pointer">
                         {q.Provider.fullname}
                       </span>
-                     </span>
+                    </span>
                   </div>
 
                   <hr className="h-px my-4 ml-2 mr-2 bg-gray-200 border-0 dark:bg-gray-700" />
