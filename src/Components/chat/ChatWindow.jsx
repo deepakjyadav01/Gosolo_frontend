@@ -3,8 +3,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getchatbyroomID, postmsg, startchart } from '../services/chatAPI';
 import ScrollableFeed from 'react-scrollable-feed'
 import io from 'socket.io-client';
-
-const socket = io('http://localhost:3200');
+//http://localhost:3200
+//https://gosolo-api.onrender.com/
+const socket = io('https://gosolo-api.onrender.com/');
 
 function ChatWindow() {
   const location = useLocation();
