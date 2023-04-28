@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
 import { getchatbyroomID, postmsg, startchart } from '../services/chatAPI';
 import ScrollableFeed from 'react-scrollable-feed'
+import io from 'socket.io-client';
+
+const socket = io('http://localhost:3200');
 
 function ChatWindow() {
   const location = useLocation();
   const [chatstart, setchatstart] = useState({
     userIds: [],
     type: "chat",
-    postID:''
+    postID: ''
   });
-  const [chatRoomId, setchatRoomId] = useState();
+  const [chatRoomId, setchatRoomId] = useState(null);
   const [User, setUser] = useState();
   const [Other, setOther] = useState();
   const [message, setMessage] = useState('');
@@ -22,9 +25,21 @@ function ChatWindow() {
     if (message.trim()) {
       const res = await postmsg(chatRoomId, message)
       if (res) {
-        getmessages(chatRoomId)
+        const messageData = {
+          message: { messageText: message },
+          postedByUser: User._id,
+          room: chatRoomId
+        };
+
+        socket.emit("send_message", messageData);
+        setMessages((list) => [...list, messageData]);
         setMessage('')
       }
+    }
+  };
+  const joinRoom = (chatRoomId) => {
+    if (chatRoomId) {
+      socket.emit("join_room", chatRoomId);
     }
   };
 
@@ -44,7 +59,7 @@ function ChatWindow() {
     if (chatstart.userIds.length === 2) {
       const res = await startchart(chatstart)
       if (res) {
-        console.log(res)
+        setchatRoomId(res.chatRoom.chatRoomId)
       }
     }
   }
@@ -52,7 +67,6 @@ function ChatWindow() {
     if (chatstart.userIds.length === 2) {
       const chat = await startchart(chatstart)
       if (chat) {
-        console.log(chat)
         setchatRoomId(chat.chatRoom.chatRoomId)
       }
       const res = await getchatbyroomID(chat.chatRoom.chatRoomId)
@@ -86,8 +100,8 @@ function ChatWindow() {
     if (chatstart && chatstart.userIds && chatstart.userIds != undefined && chatstart.userIds.length === 2) {
       fetchchatroom(chatstart)
       fetchroom()
+
     }
-    console.log(chatstart)
   }, [chatstart])
   useEffect(() => {
   }, [User])
@@ -95,6 +109,16 @@ function ChatWindow() {
   }, [Other])
   useEffect(() => {
   }, [messages])
+  useEffect(() => {
+    if (chatRoomId !== null) {
+      joinRoom(chatRoomId)
+    }
+  }, [chatRoomId])
+  useEffect(() => {
+    socket.on("receive_message", (data) => {
+      setMessages((list) => [...list, data]);
+    });
+  }, [socket]);
 
 
   return (

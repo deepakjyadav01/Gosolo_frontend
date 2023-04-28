@@ -132,13 +132,13 @@ export function Viewposts(props) {
                       />
                     </svg>
 
-                    <span className="ml-4">
+                     <span className="ml-4">
                       {" "}
                       Posted by: <span> </span>
                       <span className=" hover:underline cursor-pointer">
                         {q.Provider.fullname}
                       </span>
-                    </span>
+                     </span>
                   </div>
 
                   <hr className="h-px my-4 ml-2 mr-2 bg-gray-200 border-0 dark:bg-gray-700" />

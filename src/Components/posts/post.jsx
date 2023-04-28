@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { addbidder, confirmnull, getpostbyID, updateWS, updatefile } from "../services/postAPI";
+import { addbidder, confirmnull, getpaymentbypostID, getpostbyID, updateWS, updatefile, updatepaystatus } from "../services/postAPI";
 import MDEditor, { selectWord } from "@uiw/react-md-editor";
 import { initialState } from "../context/reducer";
 import Madal from "../home/modal";
@@ -26,6 +26,8 @@ export function Post() {
     const [selectedFile, setSelectedFile] = useState(null);
     const [link, setlink] = useState(true);
     const [file, setfile] = useState(false);
+    const [payment, setpayment] = useState({});
+    const [paystatus, setpaystatus] = useState();
     const [worksample, setworksample] = useState({
         name: "",
         link: "",
@@ -73,6 +75,11 @@ export function Post() {
                 if (res.Selected._id === initialState.userDetails.id) {
                     setUser(true)
                 }
+                if (res.Paystatus === "paid") {
+                    setpaystatus("paid")
+                } else {
+                    setpaystatus(res.Paystatus)
+                }
             }
             else {
                 setbidders(res.bidders)
@@ -95,6 +102,12 @@ export function Post() {
             }
         })
     }
+    async function fetchpayment() {
+        const result = await getpaymentbypostID(post._id)
+        if (result) {
+            setpayment(result)
+        }
+    }
     const toProfile = (id) => {
         navigate('/Freelancer', { state: { ID: id } })
     }
@@ -112,6 +125,13 @@ export function Post() {
     const setlinkA = () => {
         setfile(false)
         setlink(true)
+    }
+    const verifypayment = async () => {
+        const res = await updatepaystatus(post._id)
+        if (res) {
+            setpaystatus(res.data.Paystatus)
+            console.log(res.data)
+        }
     }
     const sendlink = async () => {
         if (worksample) {
@@ -170,10 +190,14 @@ export function Post() {
                 setwork(true)
             }
         }
+        if (post && post._id) {
+            fetchpayment(post._id)
+        }
     }, [post])
     useEffect(() => {
         if (bidders && bidders.length > 0) {
-            bidders?.map(async (q) => {
+            bidders.forEach(async (q) => {
+                // console.log(q.image)
                 const img = await getImage(q.image)
                 setImageSrc(prev => [...prev, img.request.responseURL])
 
@@ -458,16 +482,41 @@ export function Post() {
                                     </div>
                                 )}
 
-                                {Suser && worksubmitted && work && initialState.userDetails.id === selected._id && (
+                                {post && Suser && worksubmitted && work && initialState.userDetails.id === selected._id && (
                                     <div className="w-full p-4 my-12 h-auto bg-white border border-gray-200 rounded-2xl shadow-2xl sm:p-8 dark:bg-gray-800 dark:border-gray-700">
                                         <div className="flex items-center ml-4 mt-4 justify-between mb-2">
                                             <h5 className="text-2xl  font-bold leading-9 text-gray-900 dark:text-white ">
                                                 Your work
                                             </h5>
                                         </div>
-                                        <div className="flex ml-4 text-xl my-8 mb-8 leading-6 text-gray-700">
-                                            Wait until the Provider reviews and proceeds with payment.
-                                        </div>
+                                        {!payment.data && (
+                                            <div className="flex ml-4 text-xl my-8 mb-8 leading-6 text-gray-700">
+                                                Wait until the Provider reviews and proceeds with payment.
+                                            </div>
+                                        )}
+                                        {payment.data && paystatus === "unpaid" && (
+                                            <div className="my-6">
+                                                <h5 className="text-xl  font-semibold leading-9 text-gray-900 dark:text-white ">
+                                                    {post.Provider.fullname} has made payment. Verify payment
+                                                </h5>
+                                                <div className=" ">
+                                                    <button onClick={() => { verifypayment() }}
+                                                        className="mr-2 my-1 uppercase tracking-wider px-4 text-indigo-600 border-indigo-600 hover:bg-indigo-600 hover:text-white border text-sm font-semibold rounded py-1 transition transform duration-500 cursor-pointer">
+                                                        yes
+                                                    </button>
+                                                </div>
+
+                                            </div>
+                                        )}
+                                        {payment.data && paystatus === "paid" && (
+                                            <div className="my-6">
+                                                <h5 className="text-2xl  font-semibold leading-9 text-gray-900 dark:text-white ">
+                                                   Congratulations!!! Post is Completed!!.
+                                                </h5>
+                                            
+                                            </div>
+                                        )}
+
                                     </div>
                                 )}
                             </div>

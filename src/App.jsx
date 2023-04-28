@@ -10,7 +10,7 @@ import { AuthProvider } from "./Components/context";
 import { Profile } from "./Components/profile/Profile";
 import { Blogs } from "./Components/blogs/blogs";
 import { initialState } from "./Components/context/reducer";
-import { Addposts} from "./Components/posts/Addposts"
+import { Addposts } from "./Components/posts/Addposts"
 import { React, useEffect } from "react";
 import ProfileData from "./Components/profile/ProfileData";
 import Freelancer from "./Components/profile/freelancer";
@@ -20,7 +20,7 @@ import ViewBlog from "./Components/blogs/ViewBlog";
 
 
 function App() {
-  
+ 
   let user = sessionStorage.getItem("currentUser")
     ? JSON.parse(sessionStorage.getItem("currentUser"))
     : "";
@@ -28,9 +28,9 @@ function App() {
     ? JSON.parse(sessionStorage.getItem("currentUser")).accessToken
     : "";
   if (user && token) {
-    if (initialState.isAuthenticated === false){
+    if (initialState.isAuthenticated === false) {
       initialState.isAuthenticated = !initialState.isAuthenticated;
-    }   
+    }
   }
   return (
     <>
@@ -41,7 +41,7 @@ function App() {
             <Route exact path="/home" element={<Home />} />
             <Route path="/" element={<Navigate replace to="/home" />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />        
+            <Route path="/register" element={<Register />} />
             <Route path="/Profile" element={<Profile />} />
             <Route path="/ViewProfile" element={<ProfileData />} />
             <Route path="/ViewPosts" element={<Viewposts />} />

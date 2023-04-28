@@ -82,3 +82,32 @@ export async function deletepostbyid(id) {
     const response = await axios.delete(`${baseURL}/deletePostBy/${id}`, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
     return response.data
 }
+export async function order(amt,postID) {
+    let res = {
+        amount:amt,
+        postID:postID
+    }
+    const response = await axios.post(`${baseURL}/orders`, res, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+    return response.data
+}
+export async function payout(amt) {
+    let res = {
+        amount:amt,
+    }
+    const response = await axios.post(`${baseURL}/payout`, res, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+    return response.data
+}
+export async function verify(res) {
+    const response = await axios.post(`${baseURL}/verify`, res, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+    return response.data
+}
+export async function getpaymentbypostID(id) {
+
+    const response = await axios.get(`${baseURL}/getpaymentbypost/${id}`, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+    return response.data
+}
+export async function updatepaystatus(postID) {
+
+    const response = await axios.patch(`${baseURL}/updatePay/${postID}`, { headers: { 'Content-Type': 'application/json', 'x-access-token': `${initialState.token}` } })
+    return response.data
+}
