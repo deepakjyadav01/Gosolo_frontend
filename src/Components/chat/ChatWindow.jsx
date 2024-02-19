@@ -5,7 +5,7 @@ import ScrollableFeed from 'react-scrollable-feed'
 import io from 'socket.io-client';
 //http://localhost:3200
 //https://gosolo-api.onrender.com/
-const socket = io('https://gosolo-b-ackend.vercel.app');
+const socket = io('https://gosolo-api.onrender.com/api/auth');
 
 function ChatWindow() {
   const location = useLocation();
