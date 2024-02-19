@@ -7,8 +7,8 @@ import { initialState } from "../context/reducer";
 
 
 
-export const baseURL = "https://gosolo.onrender.com/";
-export const API_URL = "https://gosolo.onrender.com/";
+export const baseURL = "https://gosolo-api.onrender.com";
+export const API_URL = "https://gosolo-api.onrender.com";
 export const header = {
     'Content-Type': 'application/json'
     }
